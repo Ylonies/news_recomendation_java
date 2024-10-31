@@ -1,4 +1,5 @@
 plugins {
+    id("java")
     application
     id("pmd")
     id("jacoco")
