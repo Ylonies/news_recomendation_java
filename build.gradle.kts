@@ -27,3 +27,4 @@ pmd {
 
 tasks.test {
     useJUnitPlatform()
+}
