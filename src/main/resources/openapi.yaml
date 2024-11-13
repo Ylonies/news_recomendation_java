@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: Api Documentation
+  description: News Recommendation Service
+  version: 1.0.11
+
+tags:
+  - name: user
+    description: User Requests
+  - name: catalog
+    description: Catalog Requests
+  - name: service
+    description: Service Requests
+  - name: article
+    description: Article Requests
+
+paths:
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: login
+      requestBody:
+        description: Login Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: invalid data supplied
+        '402':
+          description: Username/password not found
+
+  /user/register:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: register
+      requestBody:
+        description: Register Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: invalid data supplied
+
+  /catalogs:
+    get:
+      tags:
+        - catalog
+      summary: Returns list of catalogs
+      description: ""
+      operationId: getCatalogs
+      security:
+        - BasicHttpAuthentication: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogInfo'
+
+  /catalogs/add:
+    post:
+      tags:
+        - catalog
+      summary: Add own catalog
+      description: ""
+      operationId: addCatalogs
+      security:
+        - BasicHttpAuthentication: []
+      requestBody:
+        description: Created catalog object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogInfo'
+        '401':
+          description: invalid data supplied
+
+  /catalogs/name:
+    delete:
+      tags:
+        - catalog
+      summary: Delete catalog
+      description: ""
+      operationId: deleteCatalogs
+      security:
+        - BasicHttpAuthentication: []
+      # requestBody:
+      #   description: Deleted catalog object
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/components/schemas/CatalogRequest'
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: invalid data supplied
+        '402':
+          description: catalog not found
+  /services:
+    get:
+      tags:
+        - service
+      summary: Returns list of services
+      description: ""
+      operationId: getAllServices
+      security:
+        -  BasicHttpAuthentication: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfo'
+  /services/url:
+    get:
+      tags:
+        - service
+      summary: Returns service info with current id
+      description: ""
+      operationId: getService
+      security:
+        - BasicHttpAuthentication: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfo'
+        '401':
+          description: invalid data supplied
+        '402':
+          description: service not found
+  /article/id:
+    get:
+      tags:
+        - article
+      summary: Returns article info with current id
+      description: ""
+      operationId: getArticle
+      security:
+        - BasicHttpAuthentication: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleInfo'
+        '401':
+          description: invalid data supplied
+        '402':
+          description: article not found
+components:
+  schemas:
+    UserLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          example: theUser
+        password:
+          type: string
+          example: '12345'
+    UserRegister:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        telegramId:
+          type: string
+          example: john
+        password:
+          type: string
+          example: '12345'
+    CatalogInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: ML
+    CatalogRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'ML'
+    ServiceInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        url:
+          type: string
+          format: url
+          example: 'https://wiki.mipt.tech/'
+    ServiceRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+          example: 'https://wiki.mipt.tech/'
+    ArticleInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        url:
+          type: string
+          format: url
+          example: 'https://wiki.mipt.tech/article0'
+        catalog_id:
+          type: integer
+          format: int64
+          example: 10
+        service_id:
+          type: integer
+          format: int64
+          example: 10
+
+  securitySchemes:
+    BasicHttpAuthentication:
+      type: http
+      scheme: basic
