@@ -106,12 +106,6 @@ paths:
       operationId: deleteCatalogs
       security:
         - BasicHttpAuthentication: []
-      # requestBody:
-      #   description: Deleted catalog object
-      #   content:
-      #     application/json:
-      #       schema:
-      #         $ref: '#/components/schemas/CatalogRequest'
       responses:
         '200':
           description: successful operation
