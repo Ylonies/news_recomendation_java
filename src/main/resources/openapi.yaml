@@ -9,8 +9,8 @@ tags:
     description: User Requests
   - name: catalog
     description: Catalog Requests
-  - name: service
-    description: Service Requests
+  - name: website
+    description: Website Requests
   - name: article
     description: Article Requests
 
@@ -31,8 +31,10 @@ paths:
       responses:
         '200':
           description: successful operation
-        '401':
+        '400':
           description: invalid data supplied
+        '401':
+          description: not authenticated
         '402':
           description: Username/password not found
 
@@ -40,8 +42,7 @@ paths:
     post:
       tags:
         - user
-      summary: Create user
-      description: This can only be done by the logged in user.
+      summary: Creates user
       operationId: register
       requestBody:
         description: Register Request
@@ -52,10 +53,34 @@ paths:
       responses:
         '200':
           description: successful operation
-        '401':
+        '400':
           description: invalid data supplied
 
-  /catalogs:
+  /user/{catalogName}:
+    get:
+      tags:
+        - user
+      summary: Returns catalogs of user
+      description: Get catalogs of user
+      operationId: getUserCatalogs
+      parameters:
+        - name: catalogName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/NameRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogInfo'
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+  /catalog:
     get:
       tags:
         - catalog
@@ -70,23 +95,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogInfo'
+                $ref: '#/components/schemas/ListOfCatalogs'
+        '401':
+          description: not authenticated
 
-  /catalogs/add:
-    post:
+  /catalog/{name}:
+    get:
       tags:
         - catalog
-      summary: Add own catalog
+      summary: Returns catalog with current name
       description: ""
-      operationId: addCatalogs
+      operationId: getCatalog with name
       security:
         - BasicHttpAuthentication: []
-      requestBody:
-        description: Created catalog object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CatalogRequest'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/NameRequest'
       responses:
         '200':
           description: successful operation
@@ -95,29 +122,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/CatalogInfo'
         '401':
-          description: invalid data supplied
-
-  /catalogs/name:
-    delete:
+          description: not authenticated
+    post:
       tags:
         - catalog
-      summary: Delete catalog
+      summary: Adds catalog with current name
       description: ""
-      operationId: deleteCatalogs
+      operationId: addCatalog
       security:
         - BasicHttpAuthentication: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/NameRequest'
       responses:
         '200':
           description: successful operation
-        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogInfo'
+        '400':
           description: invalid data supplied
+    delete:
+      tags:
+        - catalog
+      summary: Deletes catalog with current name
+      description: ""
+      operationId: deleteCatalog
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/NameRequest'
+      security:
+        - BasicHttpAuthentication: []
+
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
         '402':
           description: catalog not found
-  /services:
+  /website:
     get:
       tags:
-        - service
-      summary: Returns list of services
+        - website
+      summary: Returns list of websites
       description: ""
       operationId: getAllServices
       security:
@@ -128,36 +185,104 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceInfo'
-  /services/url:
+                $ref: '#/components/schemas/ListOfWebsites'
+        '401':
+          description: not authenticated
+  /website/{url}:
     get:
       tags:
-        - service
-      summary: Returns service info with current id
+        - website
+      summary: Returns website with current url
       description: ""
-      operationId: getService
+      operationId: getWebsite
       security:
         - BasicHttpAuthentication: []
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UrlRequest'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceInfo'
-        '401':
+                $ref: '#/components/schemas/WebsiteInfo'
+        '400':
           description: invalid data supplied
+        '401':
+          description: not authenticated
         '402':
           description: service not found
-  /article/id:
+    post:
+      tags:
+        - website
+      summary: Adds website with current url
+      description: ""
+      operationId: postWebsite
+      security:
+        - BasicHttpAuthentication: []
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UrlRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebsiteInfo'
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+        '402':
+          description: service not found
+    delete:
+      tags:
+        - website
+      summary: Deletes website with current url
+      description: ""
+      operationId: deleteWebsite
+      security:
+        - BasicHttpAuthentication: []
+      parameters:
+        - name: url
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UrlRequest'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+        '402':
+          description: service not found
+
+
+  /atricle/{id}:
     get:
       tags:
         - article
-      summary: Returns article info with current id
+      summary: Returns article with current id
       description: ""
-      operationId: getArticle
+      operationId: getArticleWithId
       security:
         - BasicHttpAuthentication: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdRequest'
       responses:
         '200':
           description: successful operation
@@ -165,10 +290,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArticleInfo'
-        '401':
+        '400':
           description: invalid data supplied
+        '401':
+          description: not authenticated
         '402':
           description: article not found
+    post:
+      tags:
+        - article
+      summary: Adds article  with current id
+      description: ""
+      operationId: postArticle
+      security:
+        - BasicHttpAuthentication: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleInfo'
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+        '402':
+          description: service not found
+    delete:
+      tags:
+        - article
+      summary: Deletes article with current url
+      description: ""
+      operationId: deleteArticle
+      security:
+        - BasicHttpAuthentication: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdRequest'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+        '402':
+          description: service not found
+  /atricle/{catalogName}:
+    get:
+      tags:
+        - article
+      summary: Returns articles with current catalog name
+      description: ""
+      operationId: getArticleWithTopic
+      security:
+        - BasicHttpAuthentication: []
+      parameters:
+        - name: catalogName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfArticles'
+        '400':
+          description: invalid data supplied
+        '401':
+          description: not authenticated
+        '402':
+          description: article not found
+
 components:
   schemas:
     UserLogin:
@@ -206,13 +412,14 @@ components:
         name:
           type: string
           example: ML
-    CatalogRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          example: 'ML'
-    ServiceInfo:
+    ListOfCatalogs:
+      type: array
+      items:
+        type: object
+        properties:
+          schema:
+            $ref: '#/components/schemas/CatalogInfo'
+    WebsiteInfo:
       type: object
       properties:
         id:
@@ -223,13 +430,13 @@ components:
           type: string
           format: url
           example: 'https://wiki.mipt.tech/'
-    ServiceRequest:
-      type: object
-      properties:
-        url:
-          type: string
-          format: url
-          example: 'https://wiki.mipt.tech/'
+    ListOfWebsites:
+      type: array
+      items:
+        type: object
+        properties:
+          schema:
+            $ref: '#/components/schemas/WebsiteInfo'
     ArticleInfo:
       type: object
       properties:
@@ -249,7 +456,32 @@ components:
           type: integer
           format: int64
           example: 10
-
+    ListOfArticles:
+      type: array
+      items:
+        type: object
+        properties:
+          schema:
+            $ref: '#/components/schemas/ArticleInfo'
+    UrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+          example: 'https://wiki.mipt.tech/'
+    IdRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+    NameRequest:
+      type: object
+      properties:
+        name:
+          type: string
   securitySchemes:
     BasicHttpAuthentication:
       type: http
