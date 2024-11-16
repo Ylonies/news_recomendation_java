@@ -1,4 +1,4 @@
-package parser.sites;
+package org.example.parser.sites.Example;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -6,8 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import parser.Article;
-import parser.SiteParse;
+import org.example.parser.Article;
+import org.example.parser.SiteParse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 public class RbcParser implements SiteParse {
   private static final int TIMEOUT = 10000;
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
-  private static final String BLOG_LINK = "https://www.rbc.ru/";
+  private static final String BLOG_LINK = "https://habr.com/ru/hubs/programming/articles/";
   private static final Logger log = LoggerFactory.getLogger(RbcParser.class);
 
   public List<Article> parseLastArticles() {
@@ -25,8 +25,8 @@ public class RbcParser implements SiteParse {
           .timeout(TIMEOUT)
           .userAgent(USER_AGENT)
           .get();
-      String title = document.selectFirst("span.main__feed__title").text();
-      Element linkElement = document.selectFirst("a.main__feed__link");
+      String title = document.selectFirst("").text();
+      Element linkElement = document.selectFirst("a.tm-title__link");
       String link = linkElement.attr("href");
       Document articleDocument = Jsoup.connect(link)
           .timeout(TIMEOUT)
