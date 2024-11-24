@@ -268,7 +268,7 @@ paths:
           description: service not found
 
 
-  /atricle/{id}:
+  /article/{id}:
     get:
       tags:
         - article
@@ -346,13 +346,13 @@ paths:
           description: not authenticated
         '402':
           description: service not found
-  /atricle/{catalogName}:
+  /atricle/catalog/{catalogName}:
     get:
       tags:
         - article
       summary: Returns articles with current catalog name
       description: ""
-      operationId: getArticleWithTopic
+      operationId: getArticleWithCatalog
       security:
         - BasicHttpAuthentication: []
       parameters:
