@@ -1,9 +1,5 @@
 package org.example.ml;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public enum Topic {
   DEVOPS("DevOps"),
   IT("IT"),
