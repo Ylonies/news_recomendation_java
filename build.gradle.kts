@@ -21,6 +21,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.6")
     implementation("com.microsoft.onnxruntime:onnxruntime:1.15.0")
     implementation("ai.djl.huggingface:tokenizers:0.30.0")
+    implementation("com.microsoft.onnxruntime:onnxruntime:1.15.0")
+    implementation("ai.djl.huggingface:tokenizers:0.30.0")
 }
 
 pmd {
