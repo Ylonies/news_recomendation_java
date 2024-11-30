@@ -1,30 +1,24 @@
 package org.example.ml;
 
 public enum Topic {
-  DEVOPS("DevOps"),
-  IT("IT"),
-  FRONTEND("Frontend"),
-  BACKEND("Backend"),
-  DATA_SCIENCE("Data Science"),
-  DATABASE_ADMINISTRATION("Database Administration"),
-  CYBERSECURITY("Cybersecurity"),
-  CLOUD_COMPUTING("Cloud Computing"),
-  MOBILE_DEVELOPMENT("Mobile Development"),
-  GAME_DEVELOPMENT("Game Development"),
-  MACHINE_LEARNING("Machine learning");
+  DEVOPS(1, "DevOps"),
+  IT(2, "IT"),
+  FRONTEND(3, "Frontend"),
+  BACKEND(4, "Backend"),
+  DATA_SCIENCE(5, "Data Science"),
+  DATABASE_ADMINISTRATION(6, "Database Administration"),
+  CYBERSECURITY(7, "Cybersecurity"),
+  CLOUD_COMPUTING(8, "Cloud Computing"),
+  MOBILE_DEVELOPMENT(9, "Mobile Development"),
+  GAME_DEVELOPMENT(10, "Game Development"),
+  MACHINE_LEARNING(11, "Machine learning");
 
   private final int id;
   private final String label;
 
-  private static class Counter
-  {
-    private static int nextValue = 0;
-  }
-
-  Topic(String label) {
+  Topic(int id, String label) {
+    this.id = id;
     this.label = label;
-    Counter.nextValue += 1;
-    id = Counter.nextValue;
   }
 
   public int getId() {

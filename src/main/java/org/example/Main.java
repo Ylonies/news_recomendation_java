@@ -1,17 +1,33 @@
 package org.example;
 
+import org.example.ml.TextClassifier;
+import org.example.ml.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class Main {
   private static final Logger logger = LoggerFactory.getLogger(Main.class);
-  private static final int MAX_COUNT = 5; // Avoid magic numbers
 
   public static void main(String[] args) {
-    logger.info("Hello and welcome!"); // Logger instead of System.out
+    if (logger.isDebugEnabled()) {
+      try {
+        TextClassifier textClassifier = new TextClassifier(
+            "src/main/resources/org/example/ml/nli-roberta-base.onnx",
+            "src/main/resources/org/example/ml/model_data/tokenizer.json"
+        );
 
-    for (int i = 1; i <= MAX_COUNT; i++) {
-      logger.info("i = {}", i); // Logger for loop output
+        for (Topic topic : textClassifier.getTopics("Для S.T.A.L.K.E.R. 2: Heart of Chornobyl вышел первый крупный патч 1.0.1 с исправлениями 650 багов")) { // Topics in descending order of probability
+          logger.debug("{} {}", topic.getId(), topic.getLabel());
+        }
+
+      } catch (IOException e) {
+        logger.error("Ошибка при загрузке модели или токенизатора", e);
+      } catch (Exception e) {
+        logger.error("Общая ошибка при классификации текста", e);
+      }
     }
   }
+
 }

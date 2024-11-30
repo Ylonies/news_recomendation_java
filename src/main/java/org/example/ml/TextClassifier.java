@@ -8,10 +8,13 @@ import ai.onnxruntime.OrtSession;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TextClassifier {
-  private static final int MAX_LENGTH = 512;
+  private final int maxLength;
 
   private final OrtEnvironment environment;
   private final OrtSession session;
@@ -19,19 +22,21 @@ public class TextClassifier {
 
   public TextClassifier(String modelPath, String tokenizerPath) throws OrtException, IOException {
     String localPath = System.getProperty("user.dir");
-    modelPath = String.valueOf(Paths.get(localPath, modelPath));
 
     environment = OrtEnvironment.getEnvironment();
-    session = environment.createSession(modelPath, new OrtSession.SessionOptions());
+    session = environment.createSession(Paths.get(localPath, modelPath).toString(), new OrtSession.SessionOptions());
     tokenizer = HuggingFaceTokenizer.newInstance(Paths.get(localPath, tokenizerPath));
+
+    maxLength = tokenizer.getMaxLength();
   }
 
   public List<Topic> getTopics(String inputText) throws Exception {
-    if (inputText.length() > MAX_LENGTH) {
-      inputText = inputText.substring(0, MAX_LENGTH);
+    String text = inputText;
+    if (text.length() > maxLength) {
+      text = text.substring(0, maxLength);
     }
 
-    return getSortTopics(getCategoryProbabilities(inputText));
+    return getSortTopics(getCategoryProbabilities(text));
   }
 
   private float[] getCategoryProbabilities(String inputText) throws Exception {
@@ -71,7 +76,7 @@ public class TextClassifier {
     return expLogits;
   }
 
-  private static List<Topic> getSortTopics(float[] probabilities) {
+  private static List<Topic> getSortTopics(float... probabilities) {
     List<Map.Entry<Float, Topic>> probabilityToTopic = new ArrayList<>();
 
     int item = 0;
