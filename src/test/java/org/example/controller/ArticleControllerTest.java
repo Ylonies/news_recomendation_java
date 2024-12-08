@@ -1,4 +1,4 @@
-package org.example.service.tests;
+package org.example.controller;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ArticleServiceTest extends ServiceTest {
+public class ArticleControllerTest extends ControllerTest {
     private static final String ARTICLE_URL = BASE_URL + "/article";
     private static final String EXAMPLE_ID = "/12345";
 

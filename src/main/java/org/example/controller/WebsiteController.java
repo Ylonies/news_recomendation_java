@@ -1,10 +1,10 @@
-package org.example.service;
+package org.example.controller;
 
 import static spark.Spark.*;
 
-public class WebsiteService extends Service {
+public class WebsiteController extends Controller {
     @Override
-    public void startService() {
+    public void startController() {
         path("/website", () -> {
             get("/", (request, response) -> {
                 response.status(501);

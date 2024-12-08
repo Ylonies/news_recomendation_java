@@ -1,24 +1,31 @@
 package org.example.service;
 
-import static spark.Spark.*;
+import org.example.dto.User;
+import org.example.repository.UserRepository;
 
-public class UserService extends Service {
+import java.util.List;
+import java.util.Optional;
 
-    public void startService() {
-        path("/user", () -> {
-            post("/login", (request, response) -> {
-                response.status(501);  // Not Implemented
-                return "Not Implemented";
-            });
-            post("/register", (request, response) -> {
-                response.status(501);  // Not Implemented
-                return "Not Implemented";
-            });
-            get("/:catalog_name", (request, response) -> {
-                String catalogName = request.params(":catalog_name");
-                response.status(501);
-                return "Not Implemented";
-            });
-        });
+public class UserService {
+  private final UserRepository userRepository;
+
+  public UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
+  public void registerUser(String name, String password, List<String> interests, List<String> newsSources, List<String> lastArticles) {
+    if (userRepository.exists(name)) {
+      throw new IllegalArgumentException("User already exists");
     }
+    User user = new User(name, password, interests, newsSources, lastArticles);
+    userRepository.save(user);
+  }
+
+  public Optional<User> getUser(String name) {
+    Optional<User> user = userRepository.findByName(name);
+    if (user.isEmpty()) {
+      throw new IllegalArgumentException("User not found");
+    }
+    return user;
+  }
 }

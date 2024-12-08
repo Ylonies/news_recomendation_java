@@ -1,15 +1,12 @@
-package org.example.service.tests;
+package org.example.controller;
 
-import org.example.service.CatalogService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class CatalogServiceTest extends ServiceTest {
+public class CatalogControllerTest extends ControllerTest {
     private static final String CATALOG_URL = BASE_URL + "/catalog";
     private static final String EXAMPLE_NAME = "/ML";
 

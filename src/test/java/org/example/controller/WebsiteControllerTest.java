@@ -1,15 +1,12 @@
-package org.example.service.tests;
+package org.example.controller;
 
-import org.example.service.UserService;
-import org.example.service.WebsiteService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class WebsiteServiceTest extends ServiceTest {
+class WebsiteControllerTest extends ControllerTest {
     private static final String WEBSITE_URL = BASE_URL + "/website";
     private static final String EXAMPLE_URL = "/itproger.com";
 

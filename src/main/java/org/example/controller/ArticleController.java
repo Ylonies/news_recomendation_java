@@ -1,10 +1,10 @@
-package org.example.service;
+package org.example.controller;
 
 import static spark.Spark.*;
 
-public class ArticleService extends Service {
+public class ArticleController extends Controller {
     @Override
-    public void startService()  {
+    public void startController()  {
 
         path("/article", () -> {
             get("/:id", (request, response) -> {
@@ -12,8 +12,7 @@ public class ArticleService extends Service {
                 response.status(501);
                 return "Not Implemented";
             });
-            post("/:id", (request, response) -> {
-                String catalogName = request.params(":id");
+            post("/", (request, response) -> {
                 response.status(501);
                 return "Not Implemented";
             });

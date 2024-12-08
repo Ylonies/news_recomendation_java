@@ -1,16 +1,12 @@
-package org.example.service.tests;
+package org.example.controller;
 
-import org.example.service.Service;
-import org.example.service.UserService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UserServiceTest extends ServiceTest {
+class UserControllerTest extends ControllerTest {
     private static final String USER_URL = BASE_URL + "/user";
 
     @Test
@@ -30,5 +26,4 @@ public class UserServiceTest extends ServiceTest {
         int responseCode = sendGetRequest(USER_URL + "/ML");
         assertEquals(501, responseCode); // Проверяем, что ответ успешный
     }
-
 }

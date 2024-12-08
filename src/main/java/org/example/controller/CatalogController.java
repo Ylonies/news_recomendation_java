@@ -1,10 +1,10 @@
-package org.example.service;
+package org.example.controller;
 
 import static spark.Spark.*;
 
-public class CatalogService extends Service{
+public class CatalogController extends Controller {
     @Override
-    public void startService() {
+    public void startController() {
         path("/catalog", () -> {
             get("/", (request, response) -> {
                 response.status(501);

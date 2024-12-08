@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.controller.UserController;
+import org.example.service.UserService;
 import org.example.dto.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,12 +11,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserRepositoryTest {
-  private UserController userController;
+  private UserService userController;
 
   @BeforeEach
   void setUp() {
     MockUserRepository mockRepository = new MockUserRepository();
-    userController = new UserController(mockRepository);
+    userController = new UserService(mockRepository);
   }
 
   @Test

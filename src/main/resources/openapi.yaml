@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Api Documentation
-  description: News Recommendation Service
+  description: News Recommendation Controller
   version: 1.0.11
 
 tags:

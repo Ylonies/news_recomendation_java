@@ -1,7 +1,5 @@
-package org.example.service.tests;
+package org.example.controller;
 
-import org.example.service.*;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -9,7 +7,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-abstract class ServiceTest {
+abstract class ControllerTest {
     static final String BASE_URL = "http://localhost:4567/";
     protected static Thread serverThread;
 

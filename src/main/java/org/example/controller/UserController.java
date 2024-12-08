@@ -1,31 +1,24 @@
 package org.example.controller;
 
-import org.example.dto.User;
-import org.example.repository.UserRepository;
+import static spark.Spark.*;
 
-import java.util.List;
-import java.util.Optional;
+public class UserController extends Controller {
 
-public class UserController {
-  private final UserRepository userRepository;
-
-  public UserController(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
-
-  public void registerUser(String name, String password, List<String> interests, List<String> newsSources, List<String> lastArticles) {
-    if (userRepository.exists(name)) {
-      throw new IllegalArgumentException("User already exists");
+    public void startController() {
+        path("/user", () -> {
+            post("/login", (request, response) -> {
+                response.status(501);  // Not Implemented
+                return "Not Implemented";
+            });
+            post("/register", (request, response) -> {
+                response.status(501);  // Not Implemented
+                return "Not Implemented";
+            });
+            get("/:catalog_name", (request, response) -> {
+                String catalogName = request.params(":catalog_name");
+                response.status(501);
+                return "Not Implemented";
+            });
+        });
     }
-    User user = new User(name, password, interests, newsSources, lastArticles);
-    userRepository.save(user);
-  }
-
-  public Optional<User> getUser(String name) {
-    Optional<User> user = userRepository.findByName(name);
-    if (user.isEmpty()) {
-      throw new IllegalArgumentException("User not found");
-    }
-    return user;
-  }
 }
