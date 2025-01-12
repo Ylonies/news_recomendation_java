@@ -7,23 +7,23 @@ import static spark.Spark.*;
 
 public class ServerManager {
     private static final int port = 4567;
-    private final List<Controller> services;
+    private final List<Controller> controllers;
 
     public ServerManager() {
-        this.services = new ArrayList<>();
-        services.add(new UserController());
-        services.add(new WebsiteController());
-        services.add(new CatalogController());
-        services.add(new ArticleController());
+        this.controllers = new ArrayList<>();
+        controllers.add(new UserController());
+        controllers.add(new WebsiteController());
+        controllers.add(new CatalogController());
+        controllers.add(new ArticleController());
     }
     public void startAll() {
         port(port);
-        for (Controller service : services) {
+        for (Controller service : controllers) {
             service.startController();
         }
     }
     public void stopAll() {
-        for (Controller service : services) {
+        for (Controller service : controllers) {
             service.stopController();
         }
         stop();

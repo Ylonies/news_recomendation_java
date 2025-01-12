@@ -425,7 +425,7 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
+          example: 10z
         url:
           type: string
           format: url
