@@ -34,35 +34,32 @@ public class ThreeDNewsParser implements SiteParse {
   public List<Article> parseLastArticles() {
     List<String> articleLinks = getArticleLinks();
 
-    List<Article> articles;
+    ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
     List<Callable<Article>> tasks = new ArrayList<>();
 
     for (String articleLink : articleLinks) {
-      tasks.add(() -> getArticle((articleLink)));
+      tasks.add(() -> getArticle(articleLink));
     }
 
-    articles = new ArrayList<>();
+    List<Article> articles = new ArrayList<>();
 
-    try (ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT)) {
-      try {
-        List<Future<Article>> results = executor.invokeAll(tasks);
+    try {
+      List<Future<Article>> results = executor.invokeAll(tasks);
 
-        for (Future<Article> result : results) {
-          try {
-            Article article = result.get();
-            if (article != null) {
-              articles.add(article);
-            }
-          } catch (ExecutionException e) {
-            log.error("Article parsing error1");
+      for (Future<Article> result : results) {
+        try {
+          Article article = result.get();
+          if (article != null) {
+            articles.add(article);
           }
-
+        } catch (ExecutionException e) {
+          log.error("Article parsing error1");
         }
-      } catch (InterruptedException e) {
-        log.error("Website {} parsing error!", BLOG_LINK, e);
-      } finally {
-        executor.shutdown();
       }
+    } catch (InterruptedException e) {
+      log.error("Website {} parsing error!", BLOG_LINK, e);
+    } finally {
+      executor.shutdown();
     }
 
     return articles;
