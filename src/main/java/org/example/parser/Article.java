@@ -3,18 +3,16 @@ package org.example.parser;
 import java.util.List;
 
 public class Article {
-  private String name;
-  private String description;
-  private String date;
-  private String link;
-  private List<String> mediaLinks;
+  private final String name;
+  private final String description;
+  private final String date;
+  private final String link;
 
-  public Article(String name, String description, String date, String link, List<String> mediaLinks) {
+  public Article(String name, String description, String date, String link) {
     this.name = name;
     this.description = description;
     this.date = date;
     this.link = link;
-    this.mediaLinks = mediaLinks;
   }
 
   public String getName() {
@@ -31,9 +29,5 @@ public class Article {
 
   public String getLink() {
     return link;
-  }
-
-  public List<String> getMediaLinks() {
-    return mediaLinks;
   }
 }
