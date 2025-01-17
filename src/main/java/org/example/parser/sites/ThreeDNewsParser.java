@@ -14,27 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ThreeDNewsParser implements SiteParse {
-  private static final int TIMEOUT = 20000;
-  private final int limitPageCount;
+public class ThreeDNewsParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
   private static final String BLOG_LINK = "https://3dnews.ru";
   private static final Logger log = LoggerFactory.getLogger(ThreeDNewsParser.class);
   private static final int THREAD_COUNT = 25;
+  private static final int TIMEOUT = 20000;
+  private static final int THREADS_TIMEOUT = 60000;
+
+  private int limitPageCount;
+  private ExecutorService executor;
+
+  public ThreeDNewsParser() {
+    this(10);
+  }
 
   public ThreeDNewsParser(int limitPageCount) {
     this.limitPageCount = limitPageCount;
-  }
 
-  public ThreeDNewsParser() {
-    this.limitPageCount = 10;
+    executor = Executors.newFixedThreadPool(THREAD_COUNT);
   }
-
   @Override
   public List<Article> parseLastArticles() {
     List<String> articleLinks = getArticleLinks();
-
-    ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
     List<Callable<Article>> tasks = new ArrayList<>();
 
     for (String articleLink : articleLinks) {
@@ -58,23 +60,9 @@ public class ThreeDNewsParser implements SiteParse {
       }
     } catch (InterruptedException e) {
       log.error("Website {} parsing error!", BLOG_LINK, e);
-    } finally {
-      executor.shutdown();
     }
 
     return articles;
-  }
-
-  private Document getPage(String link) {
-    try {
-      return Jsoup.connect(link)
-          .timeout(TIMEOUT)
-          .userAgent(USER_AGENT)
-          .get();
-    } catch (Exception e) {
-      log.error("Get request error: {}", link, e);
-      return null;
-    }
   }
 
   private List<String> getArticleLinks() {
@@ -117,5 +105,31 @@ public class ThreeDNewsParser implements SiteParse {
     String dateString = dateElement.text().split(",")[0];
 
     return new Article(name, description, dateString, link);
+  }
+
+  private Document getPage(String link) {
+    try {
+      return Jsoup.connect(link)
+          .timeout(TIMEOUT)
+          .userAgent(USER_AGENT)
+          .get();
+    } catch (Exception e) {
+      log.error("Get request error: {}", link, e);
+      return null;
+    }
+  }
+
+  @Override
+  public void close() {
+    executor.shutdown();
+
+    try {
+      if (!executor.awaitTermination(THREADS_TIMEOUT, TimeUnit.MILLISECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
   }
 }
