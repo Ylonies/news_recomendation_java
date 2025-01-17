@@ -9,7 +9,7 @@ public record ScheduledParserExecutor(BlogParserManager blogParserManager) {
 
   public void scheduleParsing(String siteId) {
     scheduler.scheduleAtFixedRate(() -> {
-      var articles = blogParserManager.parse(siteId);
+      blogParserManager.parse(siteId);
       // TODO: сохранение статей в БД
     }, 0, 5, TimeUnit.MINUTES);
   }

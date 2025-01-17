@@ -15,7 +15,8 @@ import java.util.concurrent.*;
 
 public class InfoqParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
-  private static final String BLOG_LINK = "https://www.infoq.com/development/";
+  private static final String DOMAIN = "https://www.infoq.com";
+  private static final String BLOG_LINK = "https://www.infoq.com/development";
   private static final String SITE_TITLE = "Infoq";
   private static final Logger log = LoggerFactory.getLogger(InfoqParser.class);
   private static final int THREAD_COUNT = 25;
@@ -74,11 +75,11 @@ public class InfoqParser implements SiteParse, AutoCloseable {
   }
 
   public List<String> getArticleLinks(Document page) {
-    Elements titleElements = page.select("h4.card__title a");
+    List<Element> titleElements = page.select("h4.card__title a");
     List<String> links = new ArrayList<>();
 
     for (Element titleElement : titleElements) {
-      String link = titleElement.absUrl("href");
+      String link = titleElement.attr("href");
       if (link.contains("news") || link.contains("articles")) {
         links.add(link);
       }
@@ -88,7 +89,7 @@ public class InfoqParser implements SiteParse, AutoCloseable {
   }
 
   private Article getArticle(String link) {
-    Document page = getPage(link);
+    Document page = getPage(DOMAIN + link);
     if (page == null) {
       return null;
     }
@@ -98,7 +99,7 @@ public class InfoqParser implements SiteParse, AutoCloseable {
   public Article getArticle(String link, Document page) {
     Element titleElement = page.selectFirst("h1");
     Element dateElement = page.selectFirst("p.article__readTime.date");
-    Elements contentElements = page.select("p");
+    List<Element> contentElements = page.select("p");
 
     String title = titleElement != null ? titleElement.text() : enrichTitle(link);
     String date = dateElement != null ? dateElement.text() : "Unknown date";
@@ -111,7 +112,7 @@ public class InfoqParser implements SiteParse, AutoCloseable {
       }
     }
 
-    return new Article(title, textBuilder.toString().trim(), date, link);
+    return new Article(title, textBuilder.toString().trim(), date, DOMAIN + link);
   }
 
   private String enrichTitle(String link) {

@@ -13,13 +13,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDNewsParserTest extends ParserTest {
+class ThreeDNewsParserTestDefault {
+  private ClassLoader classLoader;
   private ThreeDNewsParser parser;
 
   @BeforeEach
   void beforeEach() {
     classLoader = Thread.currentThread().getContextClassLoader();
     parser = new ThreeDNewsParser();
+  }
+
+  public Document getPage(String path) {
+    InputStream page = classLoader.getResourceAsStream(path);
+
+    try {
+      return Jsoup.parse(page, "UTF-8", "");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Test
