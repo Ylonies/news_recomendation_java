@@ -94,19 +94,13 @@ public class TextClassifier implements AutoCloseable {
   }
 
   private static Map<Topic, Float> createTopicProbabilityMap(List<Topic> topics, float... probabilities) {
-    List<Map.Entry<Topic, Float>> topicProbabilityList = new ArrayList<>();
-    for (int i = 0; i < topics.size(); i++) {
-      topicProbabilityList.add(new AbstractMap.SimpleEntry<>(topics.get(i), probabilities[i]));
+    Map<Topic, Float> topicProbabilities = new LinkedHashMap<>();
+
+    for (int i = 0; i < probabilities.length; i++) {
+      topicProbabilities.put(topics.get(i), probabilities[i]);
     }
 
-    topicProbabilityList.sort((entry1, entry2) -> Float.compare(entry2.getValue(), entry1.getValue()));
-
-    Map<Topic, Float> sortedTopicProbabilities = new LinkedHashMap<>();
-    for (Map.Entry<Topic, Float> entry : topicProbabilityList) {
-      sortedTopicProbabilities.put(entry.getKey(), entry.getValue());
-    }
-
-    return sortedTopicProbabilities;
+    return  topicProbabilities;
   }
 
   @Override

@@ -1,11 +1,13 @@
 package org.example.ml;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class TextClassifierTest {
@@ -38,8 +40,11 @@ class TextClassifierTest {
     )) {
 
       Map<Topic, Float> predicts = textClassifier.predictTopicsForText(TEXT, additionalTopics);
-      assertEquals(11, predicts.size(), "Assert predicts size");
-
+      assertAll(
+          () -> assertEquals(11, predicts.size(), "Assert predicts size"),
+          () -> predicts.values().stream()
+              .forEach(predict -> assertTrue(predict >= 0, "Predicted value should be non-negative."))
+      );
     }
   }
 }
