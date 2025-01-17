@@ -19,7 +19,7 @@ class InfoqParserTest extends ParserTest {
 
   @Test
   void getArticleLinks() {
-    List<String> links = parser.getArticleLinks(getPage("org/example/parser/InfoqParserTest/mainPage.html"));
+    List<String> links = parser.getArticleLinks(getPage("org/example/parser/InfoqParserTest/mainPage.html "));
 
     assertAll(
         () -> assertEquals(15, links.size(), "Assert links count"),
