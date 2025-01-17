@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 public class ThreeDNewsParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
   private static final String BLOG_LINK = "https://3dnews.ru";
+  private static final String SITE_TITLE = "3dnews";
   private static final Logger log = LoggerFactory.getLogger(ThreeDNewsParser.class);
   private static final int THREAD_COUNT = 25;
   private static final int TIMEOUT = 20000;
@@ -34,6 +35,12 @@ public class ThreeDNewsParser implements SiteParse, AutoCloseable {
 
     executor = Executors.newFixedThreadPool(THREAD_COUNT);
   }
+
+  @Override
+  public String getArticleTag() {
+    return SITE_TITLE;
+  }
+
   @Override
   public List<Article> parseLastArticles() {
     List<String> articleLinks = getArticleLinks();

@@ -1,68 +1,40 @@
 package org.example.parser.sites;
 
 import org.example.parser.Article;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InfoqParserTest {
-  private final InfoqParser parser = new InfoqParser() {
+class InfoqParserTest extends ParserTest {
+  private InfoqParser parser;
 
-    @Override
-    public Article parseArticle(String title, String link) {
-      return new Article(title, "Тестовый текст", "01-01-2023", link, null);
-    }
-
-    @Override
-    public List<Article> parseLastArticles() {
-      return List.of(
-          new Article("Статья 1", "Текст 1", "01-01-2023", "http://example.com/1", null),
-          new Article("Статья 2", "Текст 2", "02-01-2023", "http://example.com/2", null)
-      );
-    }
-  };
-
-  @Test
-  void testParseLastArticles() {
-    List<Article> articles = parser.parseLastArticles();
-    assertNotNull(articles);
-    assertEquals(2, articles.size());
-    assertEquals("Статья 1", articles.get(0).name());
-    assertEquals("Статья 2", articles.get(1).name());
+  @BeforeEach
+  void beforeEach() {
+    classLoader = Thread.currentThread().getContextClassLoader();
+    parser = new InfoqParser();
   }
 
   @Test
-  void testParseArticle() {
-    Article article = parser.parseArticle("Тестовый заголовок", "http://example.com/test");
-    assertNotNull(article);
-    assertEquals("Тестовый заголовок", article.name());
-    assertEquals("http://example.com/test", article.link());
+  void getArticleLinks() {
+    List<String> links = parser.getArticleLinks(getPage("org/example/parser/InfoqParserTest/mainPage.html"));
+
+    assertAll(
+        () -> assertEquals(15, links.size(), "Assert links count"),
+        () -> assertEquals("https://www.infoq.com/news/2025/01/microservices-llms-topologies/", links.getFirst(), "Assert first link")
+    );
   }
 
   @Test
-  void testEnrichTitle() {
-    String link = "https://www.infoq.com/articles/example-title";
-    String enrichedTitle = parser.enrichTitle(link);
-    assertNotNull(enrichedTitle);
-    assertTrue(enrichedTitle.contains("Example title"));
-  }
+  void getArticle() {
+    Article article = parser.getArticle("", getPage("org/example/parse/InfoqParserTest/articlePage.html"));
 
-  @Test
-  void testConnection() {
-    List<Article> articles = parser.parseLastArticles();
-    assertNotNull(articles);
-    assertFalse(articles.isEmpty());
-  }
-
-  @Test
-  void testParseArticleWithValidLink() {
-    Article article = parser.parseArticle("Тестовый заголовок", "http://example.com/test");
-    assertNotNull(article);
-    assertEquals("Тестовый заголовок", article.name());
-    assertEquals("Тестовый текст", article.description());
-    assertEquals("01-01-2023", article.date());
-    assertEquals("http://example.com/test", article.link());
+    assertAll(
+        () -> assertEquals("vlt Introduces New JavaScript Package Manager and Serverless Registry", article.name(), "Assert article name"),
+        () -> assertEquals("A monthly overview of things you need to know as an architect or aspiring architect.", article.description().substring(0, 84), "Assert article description"),
+        () -> assertEquals("Jan 10, 2025 1 min read", article.date(), "Assert article date")
+    );
   }
 }

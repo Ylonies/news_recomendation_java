@@ -1,108 +1,152 @@
 package org.example.parser.sites;
 
-import org.example.parser.Article;
-import org.example.parser.SiteParse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.example.parser.Article;
+import org.example.parser.SiteParse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
-public class InfoqParser implements SiteParse {
-  private static final int TIMEOUT = 20000;
+public class InfoqParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
   private static final String BLOG_LINK = "https://www.infoq.com/development/";
+  private static final String SITE_TITLE = "Infoq";
   private static final Logger log = LoggerFactory.getLogger(InfoqParser.class);
   private static final int THREAD_COUNT = 25;
+  private static final int TIMEOUT = 20000;
+  private static final int THREADS_TIMEOUT = 60000;
+
+  private ExecutorService executor;
+
+  public InfoqParser() {
+    executor = Executors.newFixedThreadPool(THREAD_COUNT);
+  }
 
   @Override
   public String getArticleTag() {
-    return "Infoq";
+    return SITE_TITLE;
   }
 
   @Override
   public List<Article> parseLastArticles() {
-    final var articles = new ArrayList<Article>();
-    ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+    List<String> articleLinks = getArticleLinks();
+    List<Callable<Article>> tasks = new ArrayList<>();
+
+    for (String articleLink : articleLinks) {
+      tasks.add(() -> getArticle(articleLink));
+    }
+
+    List<Article> articles = new ArrayList<>();
+
     try {
-      Document document = Jsoup.connect(BLOG_LINK)
-          .timeout(TIMEOUT)
-          .userAgent(USER_AGENT)
-          .get();
-      Elements titleElements = document.select("h4.card__title a");
-      List<Callable<Article>> tasks = new ArrayList<>();
-      for (Element titleElement : titleElements) {
-        String link = titleElement.absUrl("href");
-        if (!link.contains("news") && !link.contains("articles")) {
-          continue;
-        }
-        String title = titleElement.attr("title");
-        final String finalTitle = title.isEmpty() ? enrichTitle(link) : title;
-        final String finalLink = link;
-        tasks.add(() -> parseArticle(finalTitle, finalLink));
-      }
       List<Future<Article>> results = executor.invokeAll(tasks);
-      for (Future<Article> future : results) {
+
+      for (Future<Article> result : results) {
         try {
-          Article article = future.get();
+          Article article = result.get();
           if (article != null) {
             articles.add(article);
           }
-        } catch (Exception e) {
-          log.error("Ошибка при получении данных статьи", e);
+        } catch (ExecutionException e) {
+          log.error("Article parsing error", e);
         }
       }
-    } catch (Exception e) {
-      log.error("Ошибка во время парсинга страницы: {}", BLOG_LINK, e);
-    } finally {
-      executor.shutdown();
+    } catch (InterruptedException e) {
+      log.error("Website {} parsing error!", BLOG_LINK, e);
+      Thread.currentThread().interrupt();
     }
+
     return articles;
   }
 
-  public String enrichTitle(String link) {
-    String title = "";
-    if (link.contains("articles")) {
-      title = link
-          .replace("https://www.infoq.com/articles/", "")
-          .replace("-", " ");
-    } else if (link.contains("news")) {
-      title = link
-          .replace("https://www.infoq.com/news/", "")
-          .replace("-", " ");
+  private List<String> getArticleLinks() {
+    Document page = getPage(BLOG_LINK);
+    if (page == null) {
+      return List.of();
     }
-    title = Character.toUpperCase(title.charAt(0)) + title.substring(1);
-    return title;
+    return getArticleLinks(page);
   }
 
-  public Article parseArticle(String title, String link) {
+  public List<String> getArticleLinks(Document page) {
+    Elements titleElements = page.select("h4.card__title a");
+    List<String> links = new ArrayList<>();
+
+    for (Element titleElement : titleElements) {
+      String link = titleElement.absUrl("href");
+      if (link.contains("news") || link.contains("articles")) {
+        links.add(link);
+      }
+    }
+
+    return links;
+  }
+
+  private Article getArticle(String link) {
+    Document page = getPage(link);
+    if (page == null) {
+      return null;
+    }
+    return getArticle(link, page);
+  }
+
+  public Article getArticle(String link, Document page) {
+    Element titleElement = page.selectFirst("h1");
+    Element dateElement = page.selectFirst("p.article__readTime.date");
+    Elements contentElements = page.select("p");
+
+    String title = titleElement != null ? titleElement.text() : enrichTitle(link);
+    String date = dateElement != null ? dateElement.text() : "Unknown date";
+
+    StringBuilder textBuilder = new StringBuilder();
+    for (Element content : contentElements) {
+      String text = content.text().trim();
+      if (!text.isEmpty()) {
+        textBuilder.append(text).append(" ");
+      }
+    }
+
+    return new Article(title, textBuilder.toString().trim(), date, link);
+  }
+
+  private String enrichTitle(String link) {
+    String title = link;
+    if (link.contains("articles")) {
+      title = link.replace("https://www.infoq.com/articles/", "").replace("-", " ");
+    } else if (link.contains("news")) {
+      title = link.replace("https://www.infoq.com/news/", "").replace("-", " ");
+    }
+    return Character.toUpperCase(title.charAt(0)) + title.substring(1);
+  }
+
+  private Document getPage(String link) {
     try {
-      Document articleDocument = Jsoup.connect(link)
+      return Jsoup.connect(link)
           .timeout(TIMEOUT)
           .userAgent(USER_AGENT)
           .get();
-      Element dateElement = articleDocument.selectFirst("p[class=article__readTime date]");
-      String date = dateElement != null ? dateElement.text() : "Неизвестная дата";
-      Elements articleContent = articleDocument.select("p");
-      StringBuilder textBuilder = new StringBuilder();
-      for (Element content : articleContent) {
-        if (!content.text().trim().isEmpty()) {
-          textBuilder.append(content.text().trim());
-        }
-      }
-      String text = textBuilder.toString();
-      return new Article(title, text, date, link, null);
     } catch (Exception e) {
-      log.error("Ошибка во время парсинга страницы: {}", link, e);
+      log.error("Get request error: {}", link, e);
       return null;
+    }
+  }
+
+  @Override
+  public void close() {
+    executor.shutdown();
+
+    try {
+      if (!executor.awaitTermination(THREADS_TIMEOUT, TimeUnit.MILLISECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
     }
   }
 }
