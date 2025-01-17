@@ -1,7 +1,5 @@
 package org.example.parser;
 
-import java.util.List;
-
 public class Article {
   private final String name;
   private final String description;
