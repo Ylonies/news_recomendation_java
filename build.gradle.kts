@@ -21,7 +21,10 @@ dependencies {
     implementation("org.jsoup:jsoup:1.17.2")
     testImplementation("org.mockito:mockito-core:5.0.0")
     testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
+    implementation("com.microsoft.onnxruntime:onnxruntime:1.15.0")
+    implementation("ai.djl.huggingface:tokenizers:0.30.0")
 }
+
 pmd {
     isConsoleOutput = true
     toolVersion = "7.0.0"

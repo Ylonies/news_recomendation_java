@@ -6,6 +6,5 @@ public record Article(
     String name,
     String description,
     String date,
-    String link,
-    List<String> mediaLink
+    String link
 ) {}

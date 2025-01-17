@@ -1,30 +1,38 @@
 package org.example.parser.sites;
 
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.example.parser.Article;
 import org.example.parser.SiteParse;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class InfoqParser implements SiteParse, AutoCloseable {
+public class ThreeDNewsParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
-  private static final String BLOG_LINK = "https://www.infoq.com/development/";
-  private static final String SITE_TITLE = "Infoq";
-  private static final Logger log = LoggerFactory.getLogger(InfoqParser.class);
+  private static final String BLOG_LINK = "https://3dnews.ru";
+  private static final String SITE_TITLE = "3dnews";
+  private static final Logger log = LoggerFactory.getLogger(ThreeDNewsParser.class);
   private static final int THREAD_COUNT = 25;
   private static final int TIMEOUT = 20000;
   private static final int THREADS_TIMEOUT = 60000;
 
+  private int limitPageCount;
   private ExecutorService executor;
 
-  public InfoqParser() {
+  public ThreeDNewsParser() {
+    this(10);
+  }
+
+  public ThreeDNewsParser(int limitPageCount) {
+    this.limitPageCount = limitPageCount;
+
     executor = Executors.newFixedThreadPool(THREAD_COUNT);
   }
 
@@ -54,12 +62,11 @@ public class InfoqParser implements SiteParse, AutoCloseable {
             articles.add(article);
           }
         } catch (ExecutionException e) {
-          log.error("Article parsing error", e);
+          log.error("Article parsing error1");
         }
       }
     } catch (InterruptedException e) {
       log.error("Website {} parsing error!", BLOG_LINK, e);
-      Thread.currentThread().interrupt();
     }
 
     return articles;
@@ -70,25 +77,25 @@ public class InfoqParser implements SiteParse, AutoCloseable {
     if (page == null) {
       return List.of();
     }
-    return getArticleLinks(page);
+    return getArticleLinks();
   }
 
   public List<String> getArticleLinks(Document page) {
-    Elements titleElements = page.select("h4.card__title a");
+    List<Element> articleBlocks = page.select("div.content-block-data.white");
     List<String> links = new ArrayList<>();
 
-    for (Element titleElement : titleElements) {
-      String link = titleElement.absUrl("href");
-      if (link.contains("news") || link.contains("articles")) {
-        links.add(link);
+    for (Element articleBlock : articleBlocks) {
+      links.add(articleBlock.selectFirst("a").attr("href"));
+
+      if (links.size() == limitPageCount) {
+        break;
       }
     }
-
     return links;
   }
 
   private Article getArticle(String link) {
-    Document page = getPage(link);
+    Document page = getPage(BLOG_LINK + link);
     if (page == null) {
       return null;
     }
@@ -96,32 +103,15 @@ public class InfoqParser implements SiteParse, AutoCloseable {
   }
 
   public Article getArticle(String link, Document page) {
-    Element titleElement = page.selectFirst("h1");
-    Element dateElement = page.selectFirst("p.article__readTime.date");
-    Elements contentElements = page.select("p");
+    Element titleElement = page.selectFirst("title");
+    Element descriptionElement = page.selectFirst("div.js-mediator-article p");
+    Element dateElement = page.selectFirst("span.entry-date.tttes");
 
-    String title = titleElement != null ? titleElement.text() : enrichTitle(link);
-    String date = dateElement != null ? dateElement.text() : "Unknown date";
+    String name = titleElement.text();
+    String description = descriptionElement.text();
+    String dateString = dateElement.text().split(",")[0];
 
-    StringBuilder textBuilder = new StringBuilder();
-    for (Element content : contentElements) {
-      String text = content.text().trim();
-      if (!text.isEmpty()) {
-        textBuilder.append(text).append(" ");
-      }
-    }
-
-    return new Article(title, textBuilder.toString().trim(), date, link);
-  }
-
-  private String enrichTitle(String link) {
-    String title = link;
-    if (link.contains("articles")) {
-      title = link.replace("https://www.infoq.com/articles/", "").replace("-", " ");
-    } else if (link.contains("news")) {
-      title = link.replace("https://www.infoq.com/news/", "").replace("-", " ");
-    }
-    return Character.toUpperCase(title.charAt(0)) + title.substring(1);
+    return new Article(name, description, dateString, link);
   }
 
   private Document getPage(String link) {
