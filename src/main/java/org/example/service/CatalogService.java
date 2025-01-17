@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class CatalogService {
-    private CatalogRepository repository;
+    private CatalogRepository repository = new CatalogRepository();
 
 
     public Response<List<String>> getAll(){
@@ -25,23 +25,6 @@ public class CatalogService {
         }
         catch (Exception e) {
             return new Response<>(500);
-        }
-    }
-
-    public Response<List<String>> getWebsites(String name){
-        try{
-            if (!repository.existsByName(name)){
-                return new Response<>(409);
-            }
-            Catalog catalog = repository.getByName(name);
-            List<String> urls = new ArrayList<>();
-            for (Website website : catalog.getWebsites()) {
-                urls.add(website.getUrl());
-            }
-            return new Response<>(200, urls);
-        }
-        catch(Exception e){
-            return new Response<>(500); // Internal Server Error
         }
     }
 

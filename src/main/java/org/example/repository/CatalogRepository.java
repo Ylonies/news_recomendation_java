@@ -40,11 +40,4 @@ public class CatalogRepository {
     public void deleteByName(String name){
         //TODO
     }
-    public List<Website> getWesites(){
-        //TODO
-        return null;
-    }
-    public void addWebsite(Website site){
-        //TODO
-    }
 }

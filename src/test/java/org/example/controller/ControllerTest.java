@@ -13,7 +13,7 @@ abstract class ControllerTest {
 
     @BeforeEach
     public void setUp() {
-        ServerManager manager = new ServerManager();
+        ControllerManager manager = new ControllerManager();
         serverThread = new Thread(manager::startAll);
         serverThread.start();
         try {

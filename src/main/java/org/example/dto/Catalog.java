@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Catalog {
-    private String name_;
-    private List<Website> websites_;
+    private int id;
+    private String name;
 
     public Catalog(String name){
-        name_ = name;
-        websites_ = new ArrayList<>();
+        this.name = name;
     }
     public String getName() {
-        return name_;
-    }
-    public List<Website> getWebsites(){
-        return websites_;
+        return name;
     }
 }

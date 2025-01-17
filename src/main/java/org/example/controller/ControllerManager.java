@@ -5,11 +5,11 @@ import java.util.List;
 
 import static spark.Spark.*;
 
-public class ServerManager {
+public class ControllerManager {
     private static final int port = 4567;
     private final List<Controller> controllers;
 
-    public ServerManager() {
+    public ControllerManager() {
         this.controllers = new ArrayList<>();
         controllers.add(new UserController());
         controllers.add(new WebsiteController());
