@@ -9,10 +9,10 @@ public class InfoqParserTestParseLastArticles {
     InfoqParser parser = new InfoqParser();
     List<Article> articles = parser.parseLastArticles();
     for (Article article : articles) {
-      System.out.println("Title: " + article.getName());
-      System.out.println("Link: " + article.getLink());
-      System.out.println("Date: " + article.getDate());
-      System.out.println("Content: " + article.getDescription());
+      System.out.println("Title: " + article.name());
+      System.out.println("Link: " + article.link());
+      System.out.println("Date: " + article.date());
+      System.out.println("Content: " + article.description());
       System.out.println("------------------------------------------------------------------------------------------------------------------------------------------");
     }
   }

@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InfoqParserTest {
   private final InfoqParser parser = new InfoqParser() {
+
+    @Override
     public Article parseArticle(String title, String link) {
       return new Article(title, "Тестовый текст", "01-01-2023", link, null);
     }
@@ -27,16 +29,16 @@ class InfoqParserTest {
     List<Article> articles = parser.parseLastArticles();
     assertNotNull(articles);
     assertEquals(2, articles.size());
-    assertEquals("Статья 1", articles.get(0).getName());
-    assertEquals("Статья 2", articles.get(1).getName());
+    assertEquals("Статья 1", articles.get(0).name());
+    assertEquals("Статья 2", articles.get(1).name());
   }
 
   @Test
   void testParseArticle() {
     Article article = parser.parseArticle("Тестовый заголовок", "http://example.com/test");
     assertNotNull(article);
-    assertEquals("Тестовый заголовок", article.getName());
-    assertEquals("http://example.com/test", article.getLink());
+    assertEquals("Тестовый заголовок", article.name());
+    assertEquals("http://example.com/test", article.link());
   }
 
   @Test
@@ -58,9 +60,9 @@ class InfoqParserTest {
   void testParseArticleWithValidLink() {
     Article article = parser.parseArticle("Тестовый заголовок", "http://example.com/test");
     assertNotNull(article);
-    assertEquals("Тестовый заголовок", article.getName());
-    assertEquals("Тестовый текст", article.getDescription());
-    assertEquals("01-01-2023", article.getDate());
-    assertEquals("http://example.com/test", article.getLink());
+    assertEquals("Тестовый заголовок", article.name());
+    assertEquals("Тестовый текст", article.description());
+    assertEquals("01-01-2023", article.date());
+    assertEquals("http://example.com/test", article.link());
   }
 }

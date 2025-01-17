@@ -24,6 +24,11 @@ public class InfoqParser implements SiteParse {
   private static final int THREAD_COUNT = 25;
 
   @Override
+  public String getArticleTag() {
+    return "Infoq";
+  }
+
+  @Override
   public List<Article> parseLastArticles() {
     final var articles = new ArrayList<Article>();
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
