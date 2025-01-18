@@ -2,7 +2,6 @@ package org.example.parser;
 
 import org.example.parser.sites.InfoqParser;
 import org.example.parser.sites.ThreeDNewsParser;
-import org.example.parser.sites.HiTechParser;
 
 import java.util.HashMap;
 import java.util.List;
