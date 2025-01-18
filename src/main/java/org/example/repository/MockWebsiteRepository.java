@@ -10,14 +10,13 @@ import java.util.*;
 public class MockWebsiteRepository implements WebsiteRepository {
     // Хранение веб-сайтов пользователей в формате: userId -> List<Website>
     private final Map<UUID, List<Website>> userWebsites = new HashMap<>();
-
+    List<Website> basicWebsites = List.of(
+            new Website(UUID.randomUUID(), "DevOps", "https://DevOps.com", null),
+            new Website(UUID.randomUUID(), "BackEnd", "https://Backend.org", null)
+    );
     @Override
     public List<Website> getBasicWebsites() {
-        // Возвращаем базовые веб-сайты (можно добавить реальные данные)
-        return List.of(
-                new Website(UUID.randomUUID(), "https://DevOps.com", null),
-                new Website(UUID.randomUUID(), "https://Backend.org", null)
-        );
+        return basicWebsites;
     }
 
 
@@ -27,11 +26,16 @@ public class MockWebsiteRepository implements WebsiteRepository {
     }
 
     @Override
-    public boolean existsByName(UUID userId, String name) {
+    public boolean addedByName(UUID userId, String name) {
         List<Website> websites = userWebsites.get(userId);
         if (websites != null) {
             return websites.stream().anyMatch(website -> website.getUrl().equals(name));
         }
+        return false;
+    }
+
+    @Override
+    public boolean existsByName(String name) {
         return false;
     }
 
@@ -49,7 +53,7 @@ public class MockWebsiteRepository implements WebsiteRepository {
 
     @Override
     public Website addByName(UUID userId, String name) {
-        Website newWebsite = new Website(UUID.randomUUID(), name, userId);
+        Website newWebsite = new Website(UUID.randomUUID(), name, name+".org", userId);
         userWebsites.computeIfAbsent(userId, k -> new ArrayList<>()).add(newWebsite);
         return newWebsite;
     }

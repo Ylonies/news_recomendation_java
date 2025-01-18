@@ -51,27 +51,27 @@ public class WebsiteService {
         }
     }
 
-    public Response<String> getWebsite(Request request, String name) {
+    public Response<Website> getByName(Request request, String name) {
         User currentUser  = getCurrentUser (request);
-        if (!websiteRepository.existsByName(currentUser.getId(), name)) {
+        if (!websiteRepository.addedByName(currentUser.getId(), name)) {
             return new Response<>(409, "There is no website with this name"); // Conflict
         }
         try {
             Website website = websiteRepository.getByName(currentUser.getId(), name);
-            return new Response<>(200, website.getUrl());
+            return new Response<>(200, website);
         } catch (Exception e) {
             return new Response<>(500);
         }
     }
 
-    public Response<String> addWebsite(Request request, String name) {
+    public Response<Website> addByName(Request request, String name) {
         User currentUser  = getCurrentUser (request);
-        if (websiteRepository.existsByName(currentUser.getId(), name)) {
+        if (websiteRepository.addedByName(currentUser.getId(), name)) {
             return new Response<>(409, "Website is already added"); // Conflict
         }
         try {
             Website website = websiteRepository.addByName(currentUser.getId(), name);
-            return new Response<>(200, website.getUrl());
+            return new Response<>(200, website);
         } catch (Exception e) {
             return new Response<>(500);
         }

@@ -38,8 +38,29 @@ public class WebsiteController extends Controller {
             });
 
             get("/:name", (request, response) -> {
-                response.status(501);
-                return "Not Implemented";
+                String websiteName = request.params(":name");
+
+                Response<Website> serviceResponse = websiteService.getByName(request, websiteName);
+                response.status(serviceResponse.getStatusCode());
+
+                if (serviceResponse.isSuccess()) {
+                    return serviceResponse.getData().getUrl();
+                }
+                //TODO OTHER ERRORS;
+                return serviceResponse.getMessage();
+            });
+
+            post("/:name", (request, response) -> {
+                String websiteName = request.params(":name");
+
+                Response<Website> serviceResponse = websiteService.addByName(request, websiteName);
+                response.status(serviceResponse.getStatusCode());
+
+                if (serviceResponse.isSuccess()) {
+                    return serviceResponse.getData().getUrl();
+                }
+                //TODO OTHER ERRORS;
+                return serviceResponse.getMessage();
             });
         });
     }

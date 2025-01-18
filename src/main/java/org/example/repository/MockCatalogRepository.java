@@ -18,12 +18,6 @@ public class MockCatalogRepository implements CatalogRepository{
         return basicCatalogs;
     }
 
-    @Override
-    public boolean existsInBasicByName(String name) {
-        return basicCatalogs.stream()
-                .anyMatch(catalog -> catalog.getName().equals(name));
-    }
-
     // Метод для получения каталогов пользователя
     @Override
     public List<Catalog> getUserCatalogs(UUID userId) {
@@ -60,16 +54,6 @@ public class MockCatalogRepository implements CatalogRepository{
         Catalog newCatalog = new Catalog(name);
         userCatalogs.computeIfAbsent(userId, k -> new ArrayList<>()).add(newCatalog);
         return newCatalog;
-    }
-
-    // Метод для обновления каталога по имени
-    @Override
-    public void postByName(UUID userId, String name) {
-        Catalog catalog = getByName(userId, name);
-        if (catalog != null) {
-            // Здесь можно добавить логику обновления, если это необходимо
-            // Например, обновить имя или другие поля
-        }
     }
 
     // Метод для удаления каталога по имени
