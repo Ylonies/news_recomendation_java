@@ -1,5 +1,6 @@
 package org.example.parser.sites;
 
+import org.example.parser.Article;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,7 +14,6 @@ import java.util.concurrent.*;
 
 public class HiTechParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
-  private static final String DOMAIN = "https://hi-tech.mail.ru";
   private static final String BLOG_LINK = "https://hi-tech.mail.ru/news/";
   private static final String SITE_TITLE = "Hi-Tech Mail";
   private static final Logger log = LoggerFactory.getLogger(HiTechParser.class);
@@ -23,7 +23,7 @@ public class HiTechParser implements SiteParse, AutoCloseable {
 
   private ExecutorService executor;
 
-  public NewsParser() {
+  public HiTechParser() {
     executor = Executors.newFixedThreadPool(THREAD_COUNT);
   }
 

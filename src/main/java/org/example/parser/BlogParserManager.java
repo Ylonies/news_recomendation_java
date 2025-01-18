@@ -1,5 +1,6 @@
 package org.example.parser;
 
+import org.example.parser.sites.HiTechParser;
 import org.example.parser.sites.InfoqParser;
 import org.example.parser.sites.ThreeDNewsParser;
 
@@ -13,7 +14,7 @@ public class BlogParserManager {
   public BlogParserManager() {
     parsers.put("infoq", new InfoqParser()); // Идентификатор для сайта Infoq
     parsers.put("3dnews", new ThreeDNewsParser()); // Добавить сюда другие парсеры
-    parsers.put("hitech", new HiTechPaser());
+    parsers.put("hitech", new HiTechParser());
   }
 
   public List<Article> parse(String siteId) {

@@ -10,9 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Git LFS
-        run: git lfs install
-
       - name: Checkout sources
         uses: actions/checkout@v3
 
