@@ -1,5 +1,6 @@
 package org.example.ml;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TextClassifierTest {
 
   @Test
+  @Disabled("LFS limited")
   void predictTopicsForText() throws Exception {
     final String TEXT = "Для S.T.A.L.K.E.R. 2: Heart of Chornobyl вышел первый крупный патч 1.0.1 с исправлениями 650 багов";
 
