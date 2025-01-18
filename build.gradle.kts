@@ -21,6 +21,11 @@ dependencies {
     implementation("org.slf4j:slf4j-api:1.7.32")
     implementation("ch.qos.logback:logback-classic:1.2.6")
     implementation("com.sparkjava:spark-core:2.9.4")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0") // Убедитесь, что версия актуальна
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.0") // Убедитесь, что версия актуальна
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.0") // Убедитесь, что версия актуальна
+    implementation("org.projectlombok:lombok:1.18.28")
 }
 
 

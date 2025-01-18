@@ -5,16 +5,18 @@ import org.example.entity.User;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class MockUserRepository implements UserRepository {
   private final Map<String, User> users = new HashMap<>();
 
   @Override
-  public void save(User user) {
-    if (users.containsKey(user.getName())) {
+  public Optional<User> save(String name, String password) {
+    if (users.containsKey(name)) {
       throw new IllegalArgumentException("Пользователь уже существует");
     }
-    users.put(user.getName(), user);
+    users.put(name, new User(UUID.randomUUID(), name, password));
+    return findByName(name);
   }
 
   @Override

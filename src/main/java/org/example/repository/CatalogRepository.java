@@ -2,41 +2,17 @@ package org.example.repository;
 
 import org.example.entity.Catalog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-public class CatalogRepository {
-    public List<Catalog> getAll() {
-        //TODO
-        List<Catalog> catalogs = new ArrayList<>(Arrays.asList(
-                new Catalog("DevOps"),
-                new Catalog("Backend")
-        ));
-        return catalogs;
-    }
+public interface CatalogRepository {
+    public List<Catalog> getBasicCatalogs();
+    public List<Catalog> getUserCatalogs(UUID userId);
 
-    public boolean existsByName(String name){
-        //TODO
-
-        return true;
-    }
-
-    public Catalog getByName(String name){
-        //TODO
-        return null;
-    }
-
-    public Catalog addByName(String name){
-        //TODO
-        return null;
-    }
-
-    public void postByName(String name){
-        //TODO
-    }
-
-    public void deleteByName(String name){
-        //TODO
-    }
+    public boolean existsByName(UUID userId, String name);
+    public boolean existsInBasicByName(String name);
+    public Catalog getByName(UUID userId, String name);
+    public Catalog addByName(UUID userId, String name);
+    public void postByName(UUID userId, String name);
+    public void deleteByName(UUID userId, String name);
 }

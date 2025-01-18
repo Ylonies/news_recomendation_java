@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.entity.Response;
 import org.example.service.UserService;
 import org.example.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,8 @@ class UserRepositoryTest {
 
   @BeforeEach
   void setUp() {
-    MockUserRepository mockRepository = new MockUserRepository();
-    userController = new UserService(mockRepository);
+//    MockUserRepository mockRepository = new MockUserRepository();
+    userController = new UserService();
   }
 
   @Test
@@ -24,10 +25,10 @@ class UserRepositoryTest {
         "User",
         "password"
     );
-    Optional<User> user = userController.getUser("User");
+    Response<User> user = userController.getUser("User");
     assertNotNull(user);
-    assertEquals("User", user.get().getName());
-    assertEquals("password", user.get().getPassword());
+    assertEquals("User", user.getData().getName());
+    assertEquals("password", user.getData().getPassword());
   }
 
   @Test

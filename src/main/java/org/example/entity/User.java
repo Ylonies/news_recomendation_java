@@ -2,35 +2,24 @@ package org.example.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class User {
+  private final UUID id;
   private final String name;
   private final String password;
-  private final List<String> catalogs;
-  private final List<String> websites;
-  private final List<String> lastArticles;
 
-  public User(String name, String password) {
+  public User(UUID id, String name, String password) {
+    this.id = id;
     this.name = name;
     this.password = password;
-    this.catalogs = new ArrayList<>();
-    this.websites =new ArrayList<>();
-    this.lastArticles = new ArrayList<>();
   }
 
+  public UUID getId() {return id;}
   public String getName() {
     return name;
   }
   public String getPassword() {
     return password;
-  }
-  public List<String> getCatalogs() {
-    return catalogs;
-  }
-  public List<String> getLastArticles() {
-    return lastArticles;
-  }
-  public List<String> getWebsites() {
-    return websites;
   }
 }

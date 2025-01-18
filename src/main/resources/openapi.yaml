@@ -128,7 +128,7 @@ paths:
         - catalog
       summary: Adds catalog with current name
       description: ""
-      operationId: addCatalog
+      operationId: addCustomCatalog
       security:
         - BasicHttpAuthentication: []
       parameters:
