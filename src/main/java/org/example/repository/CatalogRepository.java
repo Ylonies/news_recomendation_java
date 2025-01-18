@@ -1,11 +1,9 @@
 package org.example.repository;
 
-import org.example.dto.Catalog;
-import org.example.dto.Website;
+import org.example.entity.Catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CatalogRepository {
@@ -20,6 +18,7 @@ public class CatalogRepository {
 
     public boolean existsByName(String name){
         //TODO
+
         return true;
     }
 

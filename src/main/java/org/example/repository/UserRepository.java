@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.dto.User;
+import org.example.entity.User;
 
 import java.util.Optional;
 

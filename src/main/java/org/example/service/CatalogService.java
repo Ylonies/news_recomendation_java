@@ -1,17 +1,16 @@
 package org.example.service;
 
-import org.example.dto.Catalog;
-import org.example.dto.Response;
-import org.example.dto.User;
-import org.example.dto.Website;
+import org.example.entity.Catalog;
+import org.example.entity.Response;
+import org.example.entity.User;
 import org.example.repository.CatalogRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class CatalogService {
     private CatalogRepository repository = new CatalogRepository();
+    private User currentUser;
 
 
     public Response<List<String>> getAll(){
@@ -28,13 +27,24 @@ public class CatalogService {
         }
     }
 
+    public Response<Catalog> getCatalog(String name){
+        if (!repository.existsByName(name)) {
+            return new Response<>(409); // Conflict
+        }
+        try {
+            Catalog catalog = repository.getByName(name);
+            return new Response<>(200, catalog); // Created
+        } catch (Exception e) {
+            return new Response<>(500);
+        }
+    }
     public Response<Catalog> addCatalog(String name){
         if (repository.existsByName(name)) {
             return new Response<>(409); // Conflict
         }
         try {
-            repository.addByName(name);
-            return new Response<>(201); // Created
+            Catalog catalog = repository.addByName(name);
+            return new Response<>(200, catalog); // Created
         } catch (Exception e) {
             return new Response<>(500);
         }

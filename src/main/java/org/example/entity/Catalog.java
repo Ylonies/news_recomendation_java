@@ -1,11 +1,9 @@
-package org.example.dto;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.example.entity;
 
 public class Catalog {
-    private int id;
+    private int catalogId;
     private String name;
+    private int userId;
 
     public Catalog(String name){
         this.name = name;
