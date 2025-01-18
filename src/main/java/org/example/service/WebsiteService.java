@@ -54,7 +54,7 @@ public class WebsiteService {
     public Response<Website> getByName(Request request, String name) {
         User currentUser  = getCurrentUser (request);
         if (!websiteRepository.addedByName(currentUser.getId(), name)) {
-            return new Response<>(409, "There is no website with this name"); // Conflict
+            return new Response<>(409, "There is no added website with this name"); // Conflict
         }
         try {
             Website website = websiteRepository.getByName(currentUser.getId(), name);
@@ -67,7 +67,15 @@ public class WebsiteService {
     public Response<Website> addByName(Request request, String name) {
         User currentUser  = getCurrentUser (request);
         if (websiteRepository.addedByName(currentUser.getId(), name)) {
-            return new Response<>(409, "Website is already added"); // Conflict
+            return new Response<>(409, "Website is already added");
+        }
+        // Проверка, существует ли сайт в списке
+        try {
+            if (!websiteRepository.existsByName(name)) {
+                return new Response<>(409, "Website is not in our list");
+            }
+        } catch (Exception e) {
+            return new Response<>(500, "Internal server error while checking website existence");
         }
         try {
             Website website = websiteRepository.addByName(currentUser.getId(), name);

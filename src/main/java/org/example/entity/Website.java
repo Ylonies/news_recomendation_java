@@ -12,9 +12,11 @@ public class Website {
         this.id = id;
         this.url = url;
         this.userId = userId;
+        this.name = name;
     }
     public String getUrl(){
         return url;
     }
+    public String getName(){return name;}
     public UUID getUserId() {return userId;}
 }

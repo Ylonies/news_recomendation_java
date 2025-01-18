@@ -1,4 +1,4 @@
-package org.example.parser;
+package org.example.entity;
 
 import java.util.List;
 

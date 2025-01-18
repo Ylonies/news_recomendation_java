@@ -36,6 +36,11 @@ public class MockWebsiteRepository implements WebsiteRepository {
 
     @Override
     public boolean existsByName(String name) {
+        for (Website website : basicWebsites) {
+            if (website.getName().equals(name)) {
+                return true;
+            }
+        }
         return false;
     }
 
