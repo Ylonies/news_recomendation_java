@@ -46,14 +46,14 @@ public class CatalogService {
         }
     }
 
-    public Response<String> getCatalog(Request request, String name){
+    public Response<Catalog> getCatalog(Request request, String name){
         User currentUser = getCurrentUser(request);
         if (!catalogRepository.existsByName(currentUser.getId(), name)) {
             return new Response<>(409, "there is no catalog with this name"); // Conflict
         }
         try {
             Catalog catalog = catalogRepository.getByName(currentUser.getId(), name);
-            return new Response<>(200, catalog.getName()); // Created
+            return new Response<>(200, catalog); // Created
         } catch (Exception e) {
             return new Response<>(500);
         }

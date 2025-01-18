@@ -38,14 +38,14 @@ public class CatalogController extends Controller {
             get("/:name", (request, response) -> {
                 //TODO rewrite
                 String catalogName = request.params(":name");
-                Response<String> serviceResponse = service.getCatalog(request, catalogName);
+                Response<Catalog> serviceResponse = service.getCatalog(request, catalogName);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
-                    return serviceResponse.getData() + " successfully found";
+                    return serviceResponse.getData().getName() + " successfully found";
                 }
                 //TODO OTHER ERRORS;
 
-                return "Not Implemented";
+                return serviceResponse.getMessage();
             });
 
             post("/:name", (request, response) -> {
@@ -57,11 +57,11 @@ public class CatalogController extends Controller {
                 }
                 //TODO OTHER ERRORS;
 
-                return "Not Implemented";
+                return serviceResponse.getMessage();
             });
+
             delete("/:name", (request, response) -> {
                 //TODO rewrite
-
                 String catalogName = request.params(":name");
                 response.status(501);
                 return "Not Implemented";
