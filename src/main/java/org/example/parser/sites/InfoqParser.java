@@ -3,7 +3,6 @@ package org.example.parser.sites;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.example.parser.Article;
@@ -17,7 +16,6 @@ public class InfoqParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
   private static final String DOMAIN = "https://www.infoq.com";
   private static final String BLOG_LINK = "https://www.infoq.com/development";
-  private static final String SITE_TITLE = "Infoq";
   private static final Logger log = LoggerFactory.getLogger(InfoqParser.class);
   private static final int THREAD_COUNT = 25;
   private static final int TIMEOUT = 20000;
@@ -27,11 +25,6 @@ public class InfoqParser implements SiteParse, AutoCloseable {
 
   public InfoqParser() {
     executor = Executors.newFixedThreadPool(THREAD_COUNT);
-  }
-
-  @Override
-  public String getArticleTag() {
-    return SITE_TITLE;
   }
 
   @Override

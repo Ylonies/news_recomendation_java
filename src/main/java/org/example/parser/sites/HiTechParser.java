@@ -15,7 +15,6 @@ import java.util.concurrent.*;
 public class HiTechParser implements SiteParse, AutoCloseable {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
   private static final String BLOG_LINK = "https://hi-tech.mail.ru/news/";
-  private static final String SITE_TITLE = "Hi-Tech Mail";
   private static final Logger log = LoggerFactory.getLogger(HiTechParser.class);
   private static final int THREAD_COUNT = 25;
   private static final int TIMEOUT = 20000;
@@ -25,11 +24,6 @@ public class HiTechParser implements SiteParse, AutoCloseable {
 
   public HiTechParser() {
     executor = Executors.newFixedThreadPool(THREAD_COUNT);
-  }
-
-  @Override
-  public String getArticleTag() {
-    return SITE_TITLE;
   }
 
   @Override

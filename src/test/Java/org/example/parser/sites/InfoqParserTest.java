@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InfoqParserTestDefault {
+class InfoqParserTest {
   private ClassLoader classLoader;
   private InfoqParser parser;
 

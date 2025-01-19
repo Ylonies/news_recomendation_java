@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDNewsParserTestDefault {
+class ThreeDNewsParserTest {
   private ClassLoader classLoader;
   private ThreeDNewsParser parser;
 
@@ -35,7 +35,7 @@ class ThreeDNewsParserTestDefault {
 
   @Test
   void getArticleLinks() {
-    List<String> links = parser.getArticleLinks(getPage("org/example/parse/ThreeDNewsParserTest/mainPage.html"));
+    List<String> links = parser.getArticleLinks(getPage("org/example/parser/ThreeDNewsParserTest/mainPage.html"));
 
     assertAll(
         () -> assertEquals(10, links.size(), "Assert links count"),
@@ -45,7 +45,7 @@ class ThreeDNewsParserTestDefault {
 
   @Test
   void getArticle() {
-    Article article = parser.getArticle("", getPage("org/example/parse/ThreeDNewsParserTest/articlePage.html"));
+    Article article = parser.getArticle("", getPage("org/example/parser/ThreeDNewsParserTest/articlePage.html"));
 
     assertAll(
         () -> assertEquals("В России перестанут работать мобильное приложение и сервисы Keenetic с 1 марта, но выход есть", article.name(), "Assert article name"),
