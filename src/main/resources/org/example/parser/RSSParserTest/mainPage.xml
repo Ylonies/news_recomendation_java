@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0">
+    <channel>
+        <title>Новости Блокнот-Молдова</title>
+        <link>https://bloknot-moldova.ru</link>
+        <description></description>
+        <lastBuildDate>Sat, 18 Jan 2025 18:42:33 +0300</lastBuildDate>
+        <ttl>60</ttl>
+
+        <image>
+            <title>Новости Блокнот-Молдова</title>
+            <url>https://bloknot-moldova.ru/upload/iblock/621/rss_lenta.png</url>
+            <link>https://bloknot-moldova.ru</link>
+            <width>100</width>
+            <height>100</height>
+        </image>
+        <item>
+            <title>Санду вручили Почетную премию Нансена</title>
+            <link>https://bloknot-moldova.ru/news/sandu-vruchili-pochetnuyu-premiyu-nansena-1816441</link>
+            <description>Очередная награда в копилку президента</description>
+            <enclosure url="https://bloknot-moldova.ru/upload/iblock/60e/uopv0k3l2h84f4eew53hqx65woa4cixk/aaa.jpg" length="76433" type="image/jpeg"/>
+            <category>Политика</category>
+            <pubDate>Sat, 18 Jan 2025 18:28:58 +0300</pubDate>
+        </item>
+    </channel>
+</rss>

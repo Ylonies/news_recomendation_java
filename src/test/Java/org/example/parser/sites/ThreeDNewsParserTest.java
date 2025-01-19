@@ -1,41 +1,28 @@
 package org.example.parser.sites;
 
 import org.example.parser.Article;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.example.parser.ParserDownloader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDNewsParserTestDefault {
-  private ClassLoader classLoader;
+class ThreeDNewsParserTest extends ParserDownloader {
   private ThreeDNewsParser parser;
 
   @BeforeEach
-  void beforeEach() {
-    classLoader = Thread.currentThread().getContextClassLoader();
+  @Override
+  protected void beforeEach() {
+    super.beforeEach();
     parser = new ThreeDNewsParser();
-  }
-
-  public Document getPage(String path) {
-    InputStream page = classLoader.getResourceAsStream(path);
-
-    try {
-      return Jsoup.parse(page, "UTF-8", "");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Test
   void getArticleLinks() {
-    List<String> links = parser.getArticleLinks(getPage("org/example/parse/ThreeDNewsParserTest/mainPage.html"));
+    List<String> links = parser.getArticleLinks(getPage("org/example/parser/ThreeDNewsParserTest/mainPage.html"));
 
     assertAll(
         () -> assertEquals(10, links.size(), "Assert links count"),
@@ -45,7 +32,7 @@ class ThreeDNewsParserTestDefault {
 
   @Test
   void getArticle() {
-    Article article = parser.getArticle("", getPage("org/example/parse/ThreeDNewsParserTest/articlePage.html"));
+    Article article = parser.getArticle("", getPage("org/example/parser/ThreeDNewsParserTest/articlePage.html"));
 
     assertAll(
         () -> assertEquals("В России перестанут работать мобильное приложение и сервисы Keenetic с 1 марта, но выход есть", article.name(), "Assert article name"),

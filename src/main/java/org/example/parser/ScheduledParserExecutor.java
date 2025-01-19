@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public record ScheduledParserExecutor(BlogParserManager blogParserManager) {
   private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-  public void scheduleParsing(String siteId) {
+  public void scheduleParsing(int siteId) {
     scheduler.scheduleAtFixedRate(() -> {
       blogParserManager.parse(siteId);
       // TODO: сохранение статей в БД
