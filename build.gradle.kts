@@ -17,15 +17,18 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
     implementation("org.slf4j:slf4j-api:1.7.32")
-    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
     implementation("com.sparkjava:spark-core:2.9.4")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0") // Убедитесь, что версия актуальна
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.0") // Убедитесь, что версия актуальна
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.0") // Убедитесь, что версия актуальна
     implementation("org.projectlombok:lombok:1.18.28")
+
+    implementation("com.zaxxer:HikariCP:2.3.2")
+    implementation("io.github.cdimascio:dotenv-java:3.1.0")
 }
 
 
