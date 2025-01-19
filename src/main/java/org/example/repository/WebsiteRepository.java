@@ -14,4 +14,5 @@ public interface WebsiteRepository {
     public Website getByName(UUID userId, String name);
     public Website addToUser(UUID userId, String name);
     public void deleteByName(UUID userId, String name);
+    public Website addUserWebsite(UUID userId, String name, String url);
 }

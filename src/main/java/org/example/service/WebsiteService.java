@@ -84,7 +84,7 @@ public class WebsiteService  extends Service{
             return new Response<>(500, "Internal server error while checking website existence");
         }
         try {
-            Website website = websiteRepository.addBasicToPreferences(currentUser.getId(), name);
+            Website website = websiteRepository.addToUser(currentUser.getId(), name);
             return new Response<>(website);
         } catch (Exception e) {
             return new Response<>(500);
@@ -104,7 +104,7 @@ public class WebsiteService  extends Service{
             return new Response<>(400, "Name and url is required");
         }
         try {
-            Website website = websiteRepository.addCustom(currentUser.getId(), name, url);
+            Website website = websiteRepository.addUserWebsite(currentUser.getId(), name, url);
             return new Response<>(website);
         } catch (Exception e) {
             return new Response<>(500, "Internal server error adding to your websites");

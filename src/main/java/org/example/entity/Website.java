@@ -20,5 +20,4 @@ public class Website {
     public String getName(){return name;}
     public UUID getUserId() {return userId;}
     public UUID getId() {return id;}
-    public String getName() {return name;}
 }

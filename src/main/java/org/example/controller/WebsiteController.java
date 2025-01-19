@@ -22,7 +22,6 @@ public class WebsiteController extends Controller {
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData();
                 }
-                //TODO OTHER ERRORS;
                 return serviceResponse.getMessage();
             });
 
@@ -33,7 +32,6 @@ public class WebsiteController extends Controller {
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData();
                 }
-                //TODO OTHER ERRORS;
                 return serviceResponse.getMessage();
             });
 
@@ -46,20 +44,26 @@ public class WebsiteController extends Controller {
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData().getUrl();
                 }
-                //TODO OTHER ERRORS;
                 return serviceResponse.getMessage();
             });
 
-            post("/:name", (request, response) -> {
-                String websiteName = request.params(":name");
-
-                Response<Website> serviceResponse = websiteService.addByName(request, websiteName);
+            post("/user/basic/:name", (request, response) -> {
+                Response<Website> serviceResponse = websiteService.addBasicByName(request);
                 response.status(serviceResponse.getStatusCode());
 
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData().getUrl();
                 }
-                //TODO OTHER ERRORS;
+                return serviceResponse.getMessage();
+            });
+
+            post("/user/custom/:name", (request, response) -> {
+                Response<Website> serviceResponse = websiteService.addCustom(request);
+                response.status(serviceResponse.getStatusCode());
+
+                if (serviceResponse.isSuccess()) {
+                    return serviceResponse.getData().getUrl();
+                }
                 return serviceResponse.getMessage();
             });
         });

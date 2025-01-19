@@ -2,7 +2,6 @@ package org.example.service;
 
 import org.example.entity.Response;
 import org.example.entity.User;
-import org.example.repository.MockUserRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserRepositoryImpl;
 import spark.Request;

@@ -36,7 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 
   @Override
-  public User getById(UUID userId) throws SQLException {
+  public Optional<User> getById(UUID userId){
     String sql = "SELECT user_id, name, password FROM users WHERE user_id = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -46,13 +46,13 @@ public class UserRepositoryImpl implements UserRepository {
           UUID extractedUserId = (UUID) resultSet.getObject("user_id");
           String name = resultSet.getString("name");
           String password = resultSet.getString("password");
-          return new User(extractedUserId, name, password);
+          return Optional.of(new User(extractedUserId, name, password));
         } else {
           return null;
         }
       }
     } catch (SQLException e) {
-      throw new SQLException("Error fetching user by ID", e);
+      return null;
     }
   }
 
