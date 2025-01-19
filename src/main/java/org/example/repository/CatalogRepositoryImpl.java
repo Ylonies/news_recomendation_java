@@ -17,13 +17,13 @@ public class CatalogRepositoryImpl implements CatalogRepository {
 
   @Override
   public List<Catalog> getBasicCatalogs() {
-    String sql = "SELECT * FROM catalogs";
+    String sql = "SELECT catalog_id, name FROM catalogs";
     List<Catalog> catalogs = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql);
          ResultSet resultSet = statement.executeQuery()) {
       while (resultSet.next()) {
-        UUID catalogId = UUID.fromString(resultSet.getString("catalog_id"));
+        UUID catalogId = (UUID) resultSet.getObject("catalog_id");
         String name = resultSet.getString("name");
         catalogs.add(new Catalog(catalogId, name, null));
       }
@@ -42,10 +42,10 @@ public class CatalogRepositoryImpl implements CatalogRepository {
     List<Catalog> catalogs = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, userId.toString());
+      statement.setObject(1, userId);
       try (ResultSet resultSet = statement.executeQuery()) {
         while (resultSet.next()) {
-          UUID catalogId = UUID.fromString(resultSet.getString("catalog_id"));
+          UUID catalogId = (UUID) resultSet.getObject("catalog_id");
           String name = resultSet.getString("name");
           catalogs.add(new Catalog(catalogId, name, userId));
         }
@@ -63,7 +63,7 @@ public class CatalogRepositoryImpl implements CatalogRepository {
         "WHERE uc.user_id = ? AND c.name = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, userId.toString());
+      statement.setObject(1, userId);
       statement.setString(2, name);
       try (ResultSet resultSet = statement.executeQuery()) {
         return resultSet.next();
@@ -81,11 +81,11 @@ public class CatalogRepositoryImpl implements CatalogRepository {
         "WHERE uc.user_id = ? AND c.name = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, userId.toString());
+      statement.setObject(1, userId);
       statement.setString(2, name);
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
-          UUID catalogId = UUID.fromString(resultSet.getString("catalog_id"));
+          UUID catalogId = (UUID) resultSet.getObject("catalog_id");
           String catalogName = resultSet.getString("name");
           return new Catalog(catalogId, catalogName, userId);
         }
@@ -104,11 +104,11 @@ public class CatalogRepositoryImpl implements CatalogRepository {
       statement.setString(1, name);
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
-          UUID catalogId = UUID.fromString(resultSet.getString("catalog_id"));
+          UUID catalogId = (UUID) resultSet.getObject("catalog_id");
           String userCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
           try (PreparedStatement userCatalogStatement = connection.prepareStatement(userCatalogSql)) {
-            userCatalogStatement.setString(1, userId.toString());
-            userCatalogStatement.setString(2, catalogId.toString());
+            userCatalogStatement.setObject(1, userId);
+            userCatalogStatement.setObject(2, catalogId);
             userCatalogStatement.executeUpdate();
           }
           return new Catalog(catalogId, name, userId);
@@ -127,7 +127,7 @@ public class CatalogRepositoryImpl implements CatalogRepository {
         "AND uc.user_id = ? AND c.name = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, userId.toString());
+      statement.setObject(1, userId);
       statement.setString(2, name);
       statement.executeUpdate();
     } catch (SQLException e) {

@@ -77,7 +77,7 @@ class WebsiteRepositoryImplTest {
     when(resultSetMock.next()).thenReturn(true);
     when(resultSetMock.getString("website_id")).thenReturn(UUID.randomUUID().toString());
 
-    Website website = websiteRepository.addByName(userId, name);
+    Website website = websiteRepository.addToUser(userId, name);
 
     assertNotNull(website);
     verify(preparedStatementMock, times(1)).executeQuery();
