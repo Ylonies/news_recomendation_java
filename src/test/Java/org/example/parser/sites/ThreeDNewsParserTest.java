@@ -1,36 +1,23 @@
 package org.example.parser.sites;
 
 import org.example.parser.Article;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.example.parser.ParserDownloader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDNewsParserTest {
-  private ClassLoader classLoader;
+class ThreeDNewsParserTest extends ParserDownloader {
   private ThreeDNewsParser parser;
 
   @BeforeEach
-  void beforeEach() {
-    classLoader = Thread.currentThread().getContextClassLoader();
+  @Override
+  protected void beforeEach() {
+    super.beforeEach();
     parser = new ThreeDNewsParser();
-  }
-
-  public Document getPage(String path) {
-    InputStream page = classLoader.getResourceAsStream(path);
-
-    try {
-      return Jsoup.parse(page, "UTF-8", "");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Test

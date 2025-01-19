@@ -1,41 +1,28 @@
 package org.example.parser.sites;
 
 import org.example.parser.Article;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
+import org.example.parser.ParserDownloader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class RSSParserTest {
-  private ClassLoader classLoader;
+class RSSParserTest extends ParserDownloader {
   private RSSParser parser;
 
   @BeforeEach
-  void beforeEach() {
-    classLoader = Thread.currentThread().getContextClassLoader();
+  @Override
+  protected void beforeEach() {
+    super.beforeEach();
     parser = new RSSParser("");
-  }
-
-  public Document getPage(String path) {
-    InputStream page = classLoader.getResourceAsStream(path);
-
-    try {
-      return Jsoup.parse(page, "UTF-8", "", Parser.xmlParser());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Test
   void parseLastArticles() {
-    List<Article> articles = parser.parseLastArticles(getPage("org/example/parser/RSSParser/mainPage.xml"));
+    List<Article> articles = parser.parseLastArticles(getPage("org/example/parser/RSSParserTest/mainPage.xml"));
     Article article = articles.getFirst();
 
     assertAll(
