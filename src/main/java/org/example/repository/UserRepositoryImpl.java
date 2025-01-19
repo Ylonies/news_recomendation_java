@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.entity.User;
+import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -11,11 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class UserRepositoryImpl {
-  private final DataSource dataSource;
-
-  public UserRepositoryImpl(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final DataSource dataSource = DataSourceConfig.getDataSource();
 
   public Optional<User> save(String name, String password) {
     String sql = "INSERT INTO users (name, password) VALUES (?, ?) RETURNING user_id";
