@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.entity.Catalog;
+import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -9,11 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class CatalogRepositoryImpl implements CatalogRepository {
-  private final DataSource dataSource;
-
-  public CatalogRepositoryImpl(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final DataSource dataSource = DataSourceConfig.getDataSource();
 
   @Override
   public List<Catalog> getBasicCatalogs() {

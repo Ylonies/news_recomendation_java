@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class WebsiteRepositoryImpl implements WebsiteRepository {
-  private final DataSource dataSource;
-
-  public WebsiteRepositoryImpl(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final DataSource dataSource = DataSourceConfig.getDataSource();
 
   @Override
   public List<Website> getBasicWebsites() {
