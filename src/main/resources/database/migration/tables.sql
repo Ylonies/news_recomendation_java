@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS articles (
 
 CREATE TABLE IF NOT EXISTS websites (
                                         website_id bigserial NOT NULL PRIMARY KEY,
-                                        URL text NOT NULL
+                                        name text NOT NULL,
+                                        url text Not NULL
 );
 
 CREATE TABLE IF NOT EXISTS catalogs (
@@ -55,5 +56,3 @@ CREATE TABLE IF NOT EXISTS user_website (
                                             CONSTRAINT user_website_website_id_fk FOREIGN KEY (website_id) REFERENCES websites (website_id),
                                             CONSTRAINT user_website_user_id_fk FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
-
-ALTER TABLE catalogs ADD CONSTRAINT catalog_catalog_id_fk FOREIGN KEY (catalog_id) REFERENCES article_category (catalog_id);

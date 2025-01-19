@@ -17,4 +17,6 @@ public class Website {
         return url;
     }
     public UUID getUserId() {return userId;}
+    public UUID getId() {return id;}
+    public String getName() {return name;}
 }
