@@ -6,6 +6,7 @@ import org.example.repository.UserRepository;
 import org.example.repository.UserRepositoryImpl;
 import spark.Request;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 import org.mindrot.jbcrypt.BCrypt;
@@ -30,7 +31,7 @@ public Response<User> getCurrentUser(Request request){
   return new Response<>(authService.getUser(request));
 }
 
-  public Response<User> getUser(UUID id) {
+  public Response<User> getUser(UUID id) throws SQLException {
     Optional<User> user = userRepository.getById(id);
     if (user.isEmpty()) {
       return new Response<>(404, "User with this id doesn't exist");
@@ -58,12 +59,16 @@ public Response<User> getCurrentUser(Request request){
     String password = request.queryParams("password");
 
     Optional<User> user = userRepository.findByName(name);
-    if (user.isPresent()) {
-      if (!checkPassword(user.get().getPassword(), password)) {
-        return new Response<>(401, "Password not correct");
+    try{
+      if (user.isPresent()) {
+        if (!checkPassword(user.get().getPassword(), password)) {
+          return new Response<>(401, "Password not correct");
+        }
+        authService.setUser(request, user.get());
+        return new Response<>(user.get());
       }
-      authService.setUser(request, user.get());
-      return new Response<>(user.get());
+    } catch(Exception e){
+      return new Response<>(500, "Internal server error in user");
     }
     return new Response<>(401, "User  with this name doesn't exist");
   }

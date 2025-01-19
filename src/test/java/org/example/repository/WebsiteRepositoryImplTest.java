@@ -27,7 +27,7 @@ class WebsiteRepositoryImplTest {
 
     when(dataSourceMock.getConnection()).thenReturn(connectionMock);
     when(connectionMock.prepareStatement(anyString())).thenReturn(preparedStatementMock);
-    websiteRepository = new WebsiteRepositoryImpl(dataSourceMock);
+    websiteRepository = new WebsiteRepositoryImpl();
   }
 
   @Test

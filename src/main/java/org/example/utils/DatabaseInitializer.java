@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public class DatabaseInitializer {
 
   private final DataSource dataSource;
-  private final String file = "database/migration/tables.sql";
 
   public DatabaseInitializer(DataSource dataSource) {
     this.dataSource = dataSource;
@@ -34,6 +33,7 @@ public class DatabaseInitializer {
   }
 
   private String loadSQLFromFile() {
+    String file = "database/migration/tables.sql";
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file)) {
       if (inputStream == null) {
         throw new RuntimeException("File not found: " + "tables.sql");

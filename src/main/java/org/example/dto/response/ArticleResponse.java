@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.ToString;
 import org.example.entity.Article;
-import org.example.entity.User;
-
-import java.util.List;
 
 @Data
 @ToString
@@ -26,10 +23,10 @@ public class ArticleResponse {
     private String link;
 
     public ArticleResponse(Article article){
-        this.name = article.getName();
-        this.description = article.getDescription();
-        this.date = article.getDate();
-        this.link = article.getLink();
+        this.name = article.name();
+        this.description = article.description();
+        this.date = article.date();
+        this.link = article.link();
     }
 
     public String json(){

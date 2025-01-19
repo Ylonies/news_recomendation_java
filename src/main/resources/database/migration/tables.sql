@@ -13,10 +13,27 @@ CREATE TABLE IF NOT EXISTS websites (
                                         url text
 );
 
+INSERT INTO websites (name, url)
+VALUES ('INFOQ', 'https://www.infoq.com/development'),
+       ('THREE_D', 'https://3dnews.ru'),
+       ('HI_TECH', 'https://hi-tech.mail.ru/news/');
+
 CREATE TABLE IF NOT EXISTS catalogs (
                                         catalog_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
                                         name text NOT NULL
 );
+
+INSERT INTO catalogs (name)
+VALUES ('DevOps'),
+       ('Frontend'),
+       ('Backend'),
+       ('Data Science'),
+       ('Machine Learning'),
+       ('Cybersecurity'),
+       ('Cloud Computing'),
+       ('Mobile Development'),
+       ('Game Development'),
+       ('Databases');
 
 CREATE TABLE IF NOT EXISTS users (
                                      user_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

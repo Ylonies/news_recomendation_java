@@ -7,12 +7,14 @@ import org.example.repository.CatalogRepository;
 import org.example.repository.CatalogRepositoryImpl;
 import org.example.repository.MockCatalogRepository;
 import spark.Request;
+import spark.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatalogService extends  Service{
+public class CatalogService {
     private final CatalogRepository catalogRepository = new CatalogRepositoryImpl();
+    private final AuthenticationService authService = new AuthenticationService();
 
     public Response<List<String>> getBasicCatalogs(Request request){
         if (!authService.isAuthenticated(request)) {

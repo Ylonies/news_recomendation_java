@@ -6,5 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ArticleRepository {
-    public List<Article> getLastArticles(UUID userId);
+    List<Article> getNewArticles(UUID userId);
+    void saveArticle(Article article);
+    void updateUserLastRequestTime(UUID userId);
 }

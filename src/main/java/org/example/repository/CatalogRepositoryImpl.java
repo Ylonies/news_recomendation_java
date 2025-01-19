@@ -63,7 +63,7 @@ public class CatalogRepositoryImpl implements CatalogRepository {
       statement.setObject(1, userId);
       statement.setString(2, name);
       try (ResultSet resultSet = statement.executeQuery()) {
-        return resultSet.next();
+        return resultSet.next();  // Если строка существует, вернется true
       }
     } catch (SQLException e) {
       throw new RuntimeException("Error checking if catalog exists", e);
@@ -95,27 +95,78 @@ public class CatalogRepositoryImpl implements CatalogRepository {
 
   @Override
   public Catalog addByName(UUID userId, String name) {
-    String sql = "INSERT INTO catalogs (name) VALUES (?) RETURNING catalog_id";
+    return null;
+  }
+
+  public void addUserCatalog(UUID userId, String catalogName) {
+    // Сначала проверим, существует ли такой каталог в таблице catalogs
+    String checkCatalogSql = "SELECT catalog_id FROM catalogs WHERE name = ?";
+    UUID catalogId = null;
     try (Connection connection = dataSource.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, name);
-      try (ResultSet resultSet = statement.executeQuery()) {
+         PreparedStatement checkCatalogStatement = connection.prepareStatement(checkCatalogSql)) {
+      checkCatalogStatement.setString(1, catalogName);
+      try (ResultSet resultSet = checkCatalogStatement.executeQuery()) {
         if (resultSet.next()) {
-          UUID catalogId = (UUID) resultSet.getObject("catalog_id");
-          String userCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
-          try (PreparedStatement userCatalogStatement = connection.prepareStatement(userCatalogSql)) {
-            userCatalogStatement.setObject(1, userId);
-            userCatalogStatement.setObject(2, catalogId);
-            userCatalogStatement.executeUpdate();
-          }
-          return new Catalog(catalogId, name, userId);
+          // Если каталог существует, получаем его ID
+          catalogId = (UUID) resultSet.getObject("catalog_id");
         }
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Error saving catalog", e);
+      throw new RuntimeException("Error checking if catalog exists", e);
     }
-    return null;
+
+    // Если каталог не существует, создаем новый каталог в таблице catalogs
+    if (catalogId == null) {
+      String insertCatalogSql = "INSERT INTO catalogs (name) VALUES (?) RETURNING catalog_id";
+      try (Connection connection = dataSource.getConnection();
+           PreparedStatement insertCatalogStatement = connection.prepareStatement(insertCatalogSql)) {
+        insertCatalogStatement.setString(1, catalogName);
+        try (ResultSet resultSet = insertCatalogStatement.executeQuery()) {
+          if (resultSet.next()) {
+            catalogId = (UUID) resultSet.getObject("catalog_id");
+          }
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error inserting new catalog", e);
+      }
+    }
+
+    // Теперь добавляем этот каталог в таблицу user_catalog для данного пользователя
+    String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement insertUserCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
+      insertUserCatalogStatement.setObject(1, userId, Types.OTHER);
+      insertUserCatalogStatement.setObject(2, catalogId, Types.OTHER);
+      insertUserCatalogStatement.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Error adding catalog to user", e);
+    }
   }
+
+  public void addToUser(UUID userId, UUID catalogId) {
+    // Проверим, существует ли каталог в таблице catalogs
+    String checkCatalogSql = "SELECT 1 FROM catalogs WHERE catalog_id = ?";
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement checkCatalogStatement = connection.prepareStatement(checkCatalogSql)) {
+      checkCatalogStatement.setObject(1, catalogId, Types.OTHER);
+      try (ResultSet resultSet = checkCatalogStatement.executeQuery()) {
+        if (!resultSet.next()) {
+          throw new IllegalArgumentException("Catalog with ID " + catalogId + " does not exist.");
+        }
+
+        // Если каталог существует, добавляем его в user_catalog
+        String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
+        try (PreparedStatement insertUserCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
+          insertUserCatalogStatement.setObject(1, userId, Types.OTHER);
+          insertUserCatalogStatement.setObject(2, catalogId, Types.OTHER);
+          insertUserCatalogStatement.executeUpdate();
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Error adding existing catalog to user", e);
+    }
+  }
+
 
   @Override
   public void deleteByName(UUID userId, String name) {
@@ -131,4 +182,41 @@ public class CatalogRepositoryImpl implements CatalogRepository {
       throw new RuntimeException("Error deleting catalog", e);
     }
   }
+
+  public static void main(String[] args) {
+    CatalogRepositoryImpl repository = new CatalogRepositoryImpl();
+    UUID userId = (UUID.fromString("276c22e1-43be-4e9c-9516-736fa350c711"));
+
+    // Добавляем каталог для пользователя
+    String catalogName = "имя каталога";
+    repository.addUserCatalog(userId, catalogName);
+    System.out.println("Catalog added for user: " + catalogName);
+
+    // Получаем каталоги пользователя
+    List<Catalog> userCatalogs = repository.getUserCatalogs(userId);
+    System.out.println("User catalogs:");
+    userCatalogs.forEach(catalog -> System.out.println("Catalog name: " + catalog.getName()));
+
+    // Проверяем, существует ли каталог по имени для пользователя
+    boolean exists = repository.existsByName(userId, catalogName);
+    System.out.println("Catalog exists by name '" + catalogName + "': " + exists);
+
+    // Получаем базовые каталоги
+    List<Catalog> basicCatalogs = repository.getBasicCatalogs();
+    System.out.println("Basic catalogs:");
+    basicCatalogs.forEach(catalog -> System.out.println("Catalog name: " + catalog.getName()));
+
+    // Получаем каталог по имени для пользователя
+    Catalog catalogByName = repository.getByName(userId, catalogName);
+    if (catalogByName != null) {
+      System.out.println("Catalog found by name '" + catalogName + "': " + catalogByName.getName());
+    } else {
+      System.out.println("Catalog not found by name '" + catalogName + "'.");
+    }
+
+    // Удаляем каталог по имени для пользователя
+    repository.deleteByName(userId, catalogName);
+    System.out.println("Catalog '" + catalogName + "' deleted for user.");
+  }
+
 }
