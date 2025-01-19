@@ -35,7 +35,7 @@ public class WebsiteController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            get("/:name", (request, response) -> {
+            get("/user/:name", (request, response) -> {
                 String websiteName = request.params(":name");
 
                 Response<Website> serviceResponse = websiteService.getByName(request, websiteName);

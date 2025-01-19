@@ -59,16 +59,12 @@ public Response<User> getCurrentUser(Request request){
     String password = request.queryParams("password");
 
     Optional<User> user = userRepository.findByName(name);
-    try{
-      if (user.isPresent()) {
-        if (!checkPassword(user.get().getPassword(), password)) {
-          return new Response<>(401, "Password not correct");
-        }
-        authService.setUser(request, user.get());
-        return new Response<>(user.get());
+    if (user.isPresent()) {
+      if (!checkPassword(user.get().getPassword(), password)) {
+        return new Response<>(401, "Password not correct");
       }
-    } catch(Exception e){
-      return new Response<>(500, "Internal server error in user");
+      authService.setUser(request, user.get());
+      return new Response<>(user.get());
     }
     return new Response<>(401, "User  with this name doesn't exist");
   }
