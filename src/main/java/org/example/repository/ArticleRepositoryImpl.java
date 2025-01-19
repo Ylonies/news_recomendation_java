@@ -56,8 +56,10 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
   @Override
   public void saveArticle(Article article) {
+    if (article == null) {
+      throw new IllegalArgumentException("Article cannot be null");
+    }
     String insertArticle = "INSERT INTO articles (article_id, name, description, date, link) VALUES (?, ?, ?, ?, ?)";
-
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(insertArticle)) {
       statement.setObject(1, article.id());
@@ -65,7 +67,6 @@ public class ArticleRepositoryImpl implements ArticleRepository {
       statement.setString(3, article.description());
       statement.setString(4, article.date());
       statement.setString(5, article.link());
-
       statement.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException("Error saving article", e);
@@ -85,5 +86,36 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     } catch (SQLException e) {
       throw new RuntimeException("Error updating last request time for user", e);
     }
+  }
+
+  public static void main(String[] args) {
+    // Создаем экземпляр репозитория
+    ArticleRepositoryImpl repository = new ArticleRepositoryImpl();
+    UserRepositoryImpl userRepository = new UserRepositoryImpl();
+    userRepository.save("Test", "password");
+    UUID userId = userRepository.findByName("Test").get().getId();
+
+
+    Article article = new Article(UUID.randomUUID(), "Article Name", "Description of article", "2025-01-20", "https://example.com");
+    repository.saveArticle(article);
+    System.out.println("Article saved successfully.");
+
+    repository.updateUserLastRequestTime(userId);
+    System.out.println("User's last request time updated.");
+
+    try {
+      Thread.sleep(1000);
+      Article article1 = new Article(UUID.randomUUID(), "Article Name", "Description of article", "2025-01-20", "https://example.com");
+      repository.saveArticle(article1);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+
+    repository.getNewArticles(userId).forEach(articleItem -> {
+      System.out.println("New article: " + articleItem.name());
+    });
+
+    repository.updateUserLastRequestTime(userId);
+    System.out.println("User's last request time updated again.");
   }
 }
