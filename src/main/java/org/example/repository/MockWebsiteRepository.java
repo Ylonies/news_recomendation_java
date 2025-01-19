@@ -57,7 +57,7 @@ public class MockWebsiteRepository implements WebsiteRepository {
     }
 
     @Override
-    public Website addByName(UUID userId, String name) {
+    public Website addToUser(UUID userId, String name) {
         Website newWebsite = new Website(UUID.randomUUID(), name, name+".org", userId);
         userWebsites.computeIfAbsent(userId, k -> new ArrayList<>()).add(newWebsite);
         return newWebsite;

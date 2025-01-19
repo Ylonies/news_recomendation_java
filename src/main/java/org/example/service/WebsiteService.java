@@ -1,21 +1,14 @@
 package org.example.service;
 
-import org.example.entity.Catalog;
 import org.example.entity.Response;
 import org.example.entity.User;
 import org.example.entity.Website;
-import org.example.repository.CatalogRepository;
-import org.example.repository.MockCatalogRepository;
 import org.example.repository.MockWebsiteRepository;
 import org.example.repository.WebsiteRepository;
 import spark.Request;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class WebsiteService {
     private WebsiteRepository websiteRepository = new MockWebsiteRepository();
@@ -64,7 +57,7 @@ public class WebsiteService {
         }
     }
 
-    public Response<Website> addByName(Request request, String name) {
+    public Response<Website> addToUser(Request request, String name) {
         User currentUser  = getCurrentUser (request);
         if (websiteRepository.addedByName(currentUser.getId(), name)) {
             return new Response<>(409, "Website is already added");
@@ -78,7 +71,7 @@ public class WebsiteService {
             return new Response<>(500, "Internal server error while checking website existence");
         }
         try {
-            Website website = websiteRepository.addByName(currentUser.getId(), name);
+            Website website = websiteRepository.addToUser(currentUser.getId(), name);
             return new Response<>(200, website);
         } catch (Exception e) {
             return new Response<>(500);

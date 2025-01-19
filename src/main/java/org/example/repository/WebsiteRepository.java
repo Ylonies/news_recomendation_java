@@ -1,6 +1,5 @@
 package org.example.repository;
 
-import org.example.entity.Catalog;
 import org.example.entity.Website;
 
 import java.util.List;
@@ -12,6 +11,6 @@ public interface WebsiteRepository {
     public boolean addedByName(UUID userId, String name); // добавлен пользователем
     public boolean existsByName(String name); //существует в basic
     public Website getByName(UUID userId, String name);
-    public Website addByName(UUID userId, String name);
+    public Website addToUser(UUID userId, String name);
     public void deleteByName(UUID userId, String name);
 }

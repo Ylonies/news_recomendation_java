@@ -3,10 +3,10 @@ package org.example.entity;
 import java.util.UUID;
 
 public class Website {
-    private UUID id;
+    private final UUID id;
     private String name;
-    private String url;
-    private UUID userId;
+    private final String url;
+    private final UUID userId;
 
     public Website(UUID id, String name, String url, UUID userId){
         this.id = id;
@@ -19,4 +19,6 @@ public class Website {
     }
     public String getName(){return name;}
     public UUID getUserId() {return userId;}
+    public UUID getId() {return id;}
+    public String getName() {return name;}
 }

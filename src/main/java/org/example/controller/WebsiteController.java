@@ -53,7 +53,7 @@ public class WebsiteController extends Controller {
             post("/:name", (request, response) -> {
                 String websiteName = request.params(":name");
 
-                Response<Website> serviceResponse = websiteService.addByName(request, websiteName);
+                Response<Website> serviceResponse = websiteService.addToUser(request, websiteName);
                 response.status(serviceResponse.getStatusCode());
 
                 if (serviceResponse.isSuccess()) {
