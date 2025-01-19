@@ -14,7 +14,7 @@ public class CatalogController extends Controller {
     public void startController() {
         path("/catalog", () -> {
             get("/basic", (request, response) -> {
-                Response<List<String>> serviceResponse = service.getBasicCatalogs();
+                Response<List<String>> serviceResponse = service.getBasicCatalogs(request);
                 response.status(serviceResponse.getStatusCode());
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()) {
@@ -24,7 +24,7 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            get("/user-preferences", (request, response) -> {
+            get("/user", (request, response) -> {
                 Response<List<String>> serviceResponse = service.getUserCatalogs(request);
                 response.status(serviceResponse.getStatusCode());
                 response.status(serviceResponse.getStatusCode());
@@ -35,10 +35,9 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            get("/:name", (request, response) -> {
+            get("/user/:name", (request, response) -> {
                 //TODO rewrite
-                String catalogName = request.params(":name");
-                Response<Catalog> serviceResponse = service.getCatalog(request, catalogName);
+                Response<Catalog> serviceResponse = service.getCatalog(request);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
                     return serviceResponse.getData().getName() + " successfully found";
@@ -48,9 +47,8 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            post("/:name", (request, response) -> {
-                String catalogName = request.params(":name");
-                Response<Catalog> serviceResponse = service.addCatalog(request, catalogName);
+            post("/user/:name", (request, response) -> {
+                Response<Catalog> serviceResponse = service.addCatalog(request);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
                     return serviceResponse.getData().getName() + " successfully added";
@@ -60,7 +58,7 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            delete("/:name", (request, response) -> {
+            delete("/user/:name", (request, response) -> {
                 //TODO rewrite
                 String catalogName = request.params(":name");
                 response.status(501);

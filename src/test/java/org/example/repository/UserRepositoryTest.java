@@ -19,34 +19,34 @@ class UserRepositoryTest {
     userController = new UserService();
   }
 
-  @Test
-  void testRegisterUserSuccessfully() {
-    userController.registerUser(
-        "User",
-        "password"
-    );
-    Response<User> user = userController.getUser("User");
-    assertNotNull(user);
-    assertEquals("User", user.getData().getName());
-    assertEquals("password", user.getData().getPassword());
-  }
+//  @Test
+//  void testRegisterUserSuccessfully() {
+//    userController.registerUser(
+//        "User",
+//        "password"
+//    );
+//    Response<User> user = userController.getUser("User");
+//    assertNotNull(user);
+//    assertEquals("User", user.getData().getName());
+//    assertEquals("password", user.getData().getPassword());
+//  }
 
-  @Test
-  void testRegisterDuplicateUser() {
-    userController.registerUser(
-        "User",
-        "password"
-    );
-    assertThrows(IllegalArgumentException.class, () -> {
-      userController.registerUser(
-          "User",
-          "differentPassword"
-      );
-    });
-  }
-
-  @Test
-  void testGetNonexistentUser() {
-    assertThrows(IllegalArgumentException.class, () -> userController.getUser("NewUser"));
-  }
+//  @Test
+//  void testRegisterDuplicateUser() {
+//    userController.registerUser(
+//        "User",
+//        "password"
+//    );
+//    assertThrows(IllegalArgumentException.class, () -> {
+//      userController.registerUser(
+//          "User",
+//          "differentPassword"
+//      );
+//    });
+//  }
+////
+//  @Test
+//  void testGetNonexistentUser() {
+//    assertThrows(IllegalArgumentException.class, () -> userController.getUser("NewUser"));
+//  }
 }

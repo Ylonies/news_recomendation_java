@@ -13,22 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ArticleService {
+public class ArticleService extends  Service{
     ArticleRepository articleRepository = new MockArticleRepository();
 
-    private User getCurrentUser (Request request) {
-        return request.session().attribute("currentUser ");
-    }
-
     public Response<List<String>> getLastArticles(Request request){
-        User currentUser = getCurrentUser(request);
+        if (!authService.isAuthenticated(request)) {
+            return new Response<>(401, "Unauthorized");
+        }
+
+        User currentUser = authService.getUser(request);
         try{
             List<Article> articles = articleRepository.getLastArticles(currentUser.getId());
             List<String> articleResponses = new ArrayList<>();
             for (Article article: articles){
                 articleResponses.add(new ArticleResponse(article).json());
             }
-            return new Response<>(200, articleResponses);
+            return new Response<>(articleResponses);
 
         } catch (Exception e) {
             return new Response<>(500, "Internal server error while getting last articles");

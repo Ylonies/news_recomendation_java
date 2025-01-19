@@ -16,7 +16,7 @@ public class WebsiteController extends Controller {
         path("/website", () -> {
             get("/basic", (request, response) -> {
                 response.status(501);
-                Response<List<String>> serviceResponse = websiteService.getBasicWebsites();
+                Response<List<String>> serviceResponse = websiteService.getBasicWebsites(request);
                 response.status(serviceResponse.getStatusCode());
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()) {
@@ -26,7 +26,7 @@ public class WebsiteController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            get("/user-preferences", (request, response) -> {
+            get("/user", (request, response) -> {
                 Response<List<String>> serviceResponse = websiteService.getUserWebsites(request);
                 response.status(serviceResponse.getStatusCode());
                 response.status(serviceResponse.getStatusCode());
@@ -53,7 +53,7 @@ public class WebsiteController extends Controller {
             post("/:name", (request, response) -> {
                 String websiteName = request.params(":name");
 
-                Response<Website> serviceResponse = websiteService.addToUser(request, websiteName);
+                Response<Website> serviceResponse = websiteService.addByName(request, websiteName);
                 response.status(serviceResponse.getStatusCode());
 
                 if (serviceResponse.isSuccess()) {

@@ -5,21 +5,21 @@ public class Response<T> {
     private T data;
     private String message = "";
 
-    public Response(int errorCode, T data) {
-        this.statusCode = errorCode;
+    public Response(T data) {
+        this.statusCode = 200;
         this.data = data;
     }
 
-    public Response(int errorCode){
-        this.statusCode = errorCode;
+    public Response(int statusCode) {
+        this.statusCode = statusCode;
         this.data = null;
     }
-
-    public Response(int errorCode, String message){
-        this.statusCode = errorCode;
+    public Response(int statusCode, String message) {
+        this.statusCode = statusCode;
         this.message = message;
         this.data = null;
     }
+
 
     public int getStatusCode() {
         return statusCode;

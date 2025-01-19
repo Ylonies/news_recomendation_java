@@ -29,6 +29,12 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:2.3.2")
     implementation("io.github.cdimascio:dotenv-java:3.1.0")
+
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation ("javax.xml.bind:jaxb-api:2.3.1")
+    implementation ("org.glassfish.jaxb:jaxb-runtime:2.3.1")
+
+    implementation("org.mindrot:jbcrypt:0.4")
     implementation("org.postgresql:postgresql:42.6.0")
 
     implementation("org.mockito:mockito-core:3.6.28")
@@ -47,8 +53,3 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
-tasks.withType<JavaExec> {
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-}
-

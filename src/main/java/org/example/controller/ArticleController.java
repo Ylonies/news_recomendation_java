@@ -14,7 +14,7 @@ public class ArticleController extends Controller {
     @Override
     public void startController()  {
         path("/article", () -> {
-            get("/last_articles", (request, response) -> {
+            get("/last", (request, response) -> {
                 Response<List<String>> articlesJson =  articleService.getLastArticles(request);
                 response.status(articlesJson.getStatusCode());
                 if (articlesJson.isSuccess()){

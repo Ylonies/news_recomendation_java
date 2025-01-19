@@ -7,21 +7,22 @@ import org.example.entity.User;
 import lombok.Data;
 import lombok.ToString;
 
-
+import java.util.UUID;
 
 
 @Data
 @ToString
 public class UserResponse {
+    @JsonProperty("user_id")
+    private UUID id;
+
     @JsonProperty("user_name")
     private String name;
 
-    @JsonProperty("password")
-    private String password;
 
     public UserResponse(User user){
+        this.id = user.getId();
         this.name = user.getName();
-        this.password = user.getPassword();
     }
 
     public String json(){

@@ -11,9 +11,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserRepositoryImpl {
+public class UserRepositoryImpl implements UserRepository {
   private final DataSource dataSource = DataSourceConfig.getDataSource();
 
+  @Override
   public Optional<User> save(String name, String password) {
     String sql = "INSERT INTO users (name, password) VALUES (?, ?) RETURNING user_id";
     try (Connection connection = dataSource.getConnection();
@@ -32,7 +33,10 @@ public class UserRepositoryImpl {
     return Optional.empty();
   }
 
-  private User getById(UUID userId) throws SQLException {
+
+
+  @Override
+  public User getById(UUID userId) throws SQLException {
     String sql = "SELECT user_id, name, password FROM users WHERE user_id = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -52,6 +56,7 @@ public class UserRepositoryImpl {
     }
   }
 
+  @Override
   public Optional<User> findByName(String name) {
     String sql = "SELECT user_id, name, password FROM users WHERE name = ?";
     try (Connection connection = dataSource.getConnection();
@@ -70,6 +75,7 @@ public class UserRepositoryImpl {
     return Optional.empty();
   }
 
+  @Override
   public boolean exists(String name) {
     String sql = "SELECT 1 FROM users WHERE name = ?";
     try (Connection connection = dataSource.getConnection();

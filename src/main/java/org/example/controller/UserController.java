@@ -13,42 +13,31 @@ public class UserController extends Controller {
     public void startController() {
         path("/user", () -> {
             post("/login", (request, response) -> {
-                String name = request.queryParams("name");
-                String password = request.queryParams("password");
-
-                Response<User> userResponse = userService.loginUser(name, password);
+                Response<User> userResponse = userService.loginUser(request);
                 response.status(userResponse.getStatusCode());
                 if (userResponse.isSuccess()) {
-                    User user = userResponse.getData();
-                    request.session().attribute("currentUser ", user);
-                    return new UserResponse(user).json();
+                    return new UserResponse(userResponse.getData()).json();
                 }
                 return userResponse.getMessage();
-                //TODO other errors
             });
 
             post("/register", (request, response) -> {
-                String name = request.queryParams("name");
-                String password = request.queryParams("password");
-                Response<User> userResponse = userService.registerUser(name, password);
-                //TODO rewrite
+                Response<User> userResponse = userService.registerUser(request);
+                response.status(userResponse.getStatusCode());
                 if (userResponse.isSuccess()) {
                     User user = userResponse.getData();
-                    request.session().attribute("currentUser", user);
                     return new UserResponse(user).json();
                 }
-                return "Not Implemented";
-                //TODO other errors
+                return userResponse.getMessage();
             });
 
             get("/currentUser", (req, res) -> {
-                User currentUser  = req.session().attribute("currentUser");
-                if (currentUser  != null) {
-                    return new UserResponse(currentUser).json();
-                } else {
-                    res.status(401);
-                    return "No user is currently logged in.";
+                Response<User> userResponse = userService.getCurrentUser(req);
+                res.status(userResponse.getStatusCode());
+                if (userResponse.isSuccess()){
+                    return new UserResponse(userResponse.getData()).json();
                 }
+                return userResponse.getMessage();
             });
 
 
