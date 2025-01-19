@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CatalogRepositoryImplTest {
   private DataSource dataSource;
@@ -19,7 +20,7 @@ class CatalogRepositoryImplTest {
   @BeforeEach
   void setUp() {
     dataSource = mock(DataSource.class);
-    catalogRepository = new CatalogRepositoryImpl(dataSource);
+    catalogRepository = new CatalogRepositoryImpl();
   }
 
   @Test
@@ -32,40 +33,15 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
+    UUID catalogId = UUID.randomUUID(); // Создаем UUID
     when(resultSet.next()).thenReturn(true).thenReturn(false);
-    when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
+    when(resultSet.getObject("catalog_id")).thenReturn(catalogId); // Используем UUID
     when(resultSet.getString("name")).thenReturn("Catalog 1");
 
     List<Catalog> catalogs = catalogRepository.getBasicCatalogs();
 
-    assert catalogs.size() == 1;
-    assert catalogs.getFirst().getName().equals("Catalog 1");
-
-    verify(dataSource).getConnection();
-    verify(connection).prepareStatement(anyString());
-    verify(statement).executeQuery();
-  }
-
-  @Test
-  void testGetUserCatalogs() throws SQLException {
-    UUID userId = UUID.randomUUID();
-
-    Connection connection = mock(Connection.class);
-    PreparedStatement statement = mock(PreparedStatement.class);
-    ResultSet resultSet = mock(ResultSet.class);
-
-    when(dataSource.getConnection()).thenReturn(connection);
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-
-    when(resultSet.next()).thenReturn(true).thenReturn(false);
-    when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
-    when(resultSet.getString("name")).thenReturn("User Catalog 1");
-
-    List<Catalog> catalogs = catalogRepository.getUserCatalogs(userId);
-
-    assert catalogs.size() == 1;
-    assert catalogs.getFirst().getName().equals("User Catalog 1");
+    assertEquals(1, catalogs.size());
+    assertEquals("Catalog 1", catalogs.get(0).getName()); // исправляем getFirst на get(0)
 
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
@@ -85,11 +61,40 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
-    when(resultSet.next()).thenReturn(true);
+    when(resultSet.next()).thenReturn(true).thenReturn(false);
+    when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
+    when(resultSet.getString("name")).thenReturn(catalogName);
 
     boolean exists = catalogRepository.existsByName(userId, catalogName);
 
-    assert exists;
+    assertTrue(exists);
+
+    verify(dataSource).getConnection();
+    verify(connection).prepareStatement(anyString());
+    verify(statement).executeQuery();
+  }
+
+
+  @Test
+  void testGetUserCatalogs() throws SQLException {
+    UUID userId = UUID.randomUUID();
+
+    Connection connection = mock(Connection.class);
+    PreparedStatement statement = mock(PreparedStatement.class);
+    ResultSet resultSet = mock(ResultSet.class);
+
+    when(dataSource.getConnection()).thenReturn(connection);
+    when(connection.prepareStatement(anyString())).thenReturn(statement);
+    when(statement.executeQuery()).thenReturn(resultSet);
+
+    when(resultSet.next()).thenReturn(true).thenReturn(false);
+    when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
+    when(resultSet.getString("name")).thenReturn("User Catalog 1");
+
+    List<Catalog> catalogs = catalogRepository.getUserCatalogs(userId);
+
+    assertEquals(1, catalogs.size());
+    assertEquals("User Catalog 1", catalogs.get(0).getName());
 
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
@@ -115,12 +120,11 @@ class CatalogRepositoryImplTest {
 
     Catalog catalog = catalogRepository.getByName(userId, catalogName);
 
-    assert catalog != null;
-    assert catalog.getName().equals(catalogName);
+    assertNotNull(catalog);
+    assertEquals(catalogName, catalog.getName());
 
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
     verify(statement).executeQuery();
   }
-
 }

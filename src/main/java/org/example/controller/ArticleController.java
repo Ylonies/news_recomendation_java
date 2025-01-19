@@ -1,7 +1,5 @@
 package org.example.controller;
 
-import org.example.dto.response.ArticleResponse;
-import org.example.entity.Article;
 import org.example.entity.Response;
 import org.example.service.ArticleService;
 

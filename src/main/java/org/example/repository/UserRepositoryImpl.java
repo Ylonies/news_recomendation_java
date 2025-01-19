@@ -33,10 +33,8 @@ public class UserRepositoryImpl implements UserRepository {
     return Optional.empty();
   }
 
-
-
   @Override
-  public Optional<User> getById(UUID userId){
+  public Optional<User> getById(UUID userId) throws SQLException {
     String sql = "SELECT user_id, name, password FROM users WHERE user_id = ?";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -52,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
         }
       }
     } catch (SQLException e) {
-      return null;
+      throw new SQLException("Error fetching user by ID", e);
     }
   }
 
@@ -70,7 +68,8 @@ public class UserRepositoryImpl implements UserRepository {
         return Optional.of(user);
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Error finding user by name", e);
+//      throw new RuntimeException("Error finding user by name", e);
+      return Optional.empty();
     }
     return Optional.empty();
   }
