@@ -1,21 +1,22 @@
 package org.example.repository;
 
 import org.example.entity.User;
-import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl {
   private final DataSource dataSource;
 
   public UserRepositoryImpl(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  @Override
   public Optional<User> save(String name, String password) {
     String sql = "INSERT INTO users (name, password) VALUES (?, ?) RETURNING user_id";
     try (Connection connection = dataSource.getConnection();
@@ -34,7 +35,6 @@ public class UserRepositoryImpl implements UserRepository {
     return Optional.empty();
   }
 
-  @Override
   public Optional<User> findByName(String name) {
     String sql = "SELECT * FROM users WHERE name = ?";
     try (Connection connection = dataSource.getConnection();
@@ -55,7 +55,6 @@ public class UserRepositoryImpl implements UserRepository {
     return Optional.empty();
   }
 
-  @Override
   public boolean exists(String name) {
     String sql = "SELECT * FROM users WHERE name = ?";
     try (Connection connection = dataSource.getConnection();
@@ -65,23 +64,6 @@ public class UserRepositoryImpl implements UserRepository {
       return resultSet.next();
     } catch (SQLException e) {
       throw new RuntimeException("Error checking if user exists", e);
-    }
-  }
-
-  public static void main(String[] args) {
-    DataSource dataSource = DataSourceConfig.getDataSource(); // Получаем DataSource через конфигурацию
-    UserRepositoryImpl repository = new UserRepositoryImpl(dataSource);
-
-    String name = "newuser";
-    String password = "password123";
-
-    // Проверяем, существует ли уже пользователь с таким именем
-    if (!repository.exists(name)) {
-      // Если не существует, сохраняем нового пользователя
-      Optional<User> user = repository.save(name, password);
-      user.ifPresent(u -> System.out.println("User saved: " + u.getName()));
-    } else {
-      System.out.println("User already exists.");
     }
   }
 }

@@ -3,7 +3,6 @@ package org.example.repository;
 import org.example.entity.Catalog;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -25,7 +24,6 @@ class CatalogRepositoryImplTest {
 
   @Test
   void testGetBasicCatalogs() throws SQLException {
-    // Мокаем подключение и результат запроса
     Connection connection = mock(Connection.class);
     PreparedStatement statement = mock(PreparedStatement.class);
     ResultSet resultSet = mock(ResultSet.class);
@@ -34,19 +32,15 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
-    // Устанавливаем поведение для resultSet
-    when(resultSet.next()).thenReturn(true).thenReturn(false); // Имитируем 1 строку в результате
+    when(resultSet.next()).thenReturn(true).thenReturn(false);
     when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
     when(resultSet.getString("name")).thenReturn("Catalog 1");
 
-    // Вызов метода
     List<Catalog> catalogs = catalogRepository.getBasicCatalogs();
 
-    // Проверки
     assert catalogs.size() == 1;
-    assert catalogs.get(0).getName().equals("Catalog 1");
+    assert catalogs.getFirst().getName().equals("Catalog 1");
 
-    // Проверяем взаимодействие с mock-объектами
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
     verify(statement).executeQuery();
@@ -56,7 +50,6 @@ class CatalogRepositoryImplTest {
   void testGetUserCatalogs() throws SQLException {
     UUID userId = UUID.randomUUID();
 
-    // Мокаем подключение и результат запроса
     Connection connection = mock(Connection.class);
     PreparedStatement statement = mock(PreparedStatement.class);
     ResultSet resultSet = mock(ResultSet.class);
@@ -65,19 +58,15 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
-    // Устанавливаем поведение для resultSet
-    when(resultSet.next()).thenReturn(true).thenReturn(false); // Имитируем 1 строку в результате
+    when(resultSet.next()).thenReturn(true).thenReturn(false);
     when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
     when(resultSet.getString("name")).thenReturn("User Catalog 1");
 
-    // Вызов метода
     List<Catalog> catalogs = catalogRepository.getUserCatalogs(userId);
 
-    // Проверки
     assert catalogs.size() == 1;
-    assert catalogs.get(0).getName().equals("User Catalog 1");
+    assert catalogs.getFirst().getName().equals("User Catalog 1");
 
-    // Проверяем взаимодействие с mock-объектами
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
     verify(statement).executeQuery();
@@ -88,7 +77,6 @@ class CatalogRepositoryImplTest {
     UUID userId = UUID.randomUUID();
     String catalogName = "Catalog 1";
 
-    // Мокаем подключение и результат запроса
     Connection connection = mock(Connection.class);
     PreparedStatement statement = mock(PreparedStatement.class);
     ResultSet resultSet = mock(ResultSet.class);
@@ -97,16 +85,12 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
-    // Устанавливаем поведение для resultSet
-    when(resultSet.next()).thenReturn(true); // Имитируем существование записи
+    when(resultSet.next()).thenReturn(true);
 
-    // Вызов метода
     boolean exists = catalogRepository.existsByName(userId, catalogName);
 
-    // Проверки
     assert exists;
 
-    // Проверяем взаимодействие с mock-объектами
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
     verify(statement).executeQuery();
@@ -117,7 +101,6 @@ class CatalogRepositoryImplTest {
     UUID userId = UUID.randomUUID();
     String catalogName = "Catalog 1";
 
-    // Мокаем подключение и результат запроса
     Connection connection = mock(Connection.class);
     PreparedStatement statement = mock(PreparedStatement.class);
     ResultSet resultSet = mock(ResultSet.class);
@@ -126,19 +109,15 @@ class CatalogRepositoryImplTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
     when(statement.executeQuery()).thenReturn(resultSet);
 
-    // Устанавливаем поведение для resultSet
-    when(resultSet.next()).thenReturn(true); // Имитируем существование записи
+    when(resultSet.next()).thenReturn(true);
     when(resultSet.getString("catalog_id")).thenReturn(UUID.randomUUID().toString());
     when(resultSet.getString("name")).thenReturn(catalogName);
 
-    // Вызов метода
     Catalog catalog = catalogRepository.getByName(userId, catalogName);
 
-    // Проверки
     assert catalog != null;
     assert catalog.getName().equals(catalogName);
 
-    // Проверяем взаимодействие с mock-объектами
     verify(dataSource).getConnection();
     verify(connection).prepareStatement(anyString());
     verify(statement).executeQuery();
