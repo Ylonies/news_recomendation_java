@@ -71,7 +71,7 @@ public class WebsiteService  extends Service{
             return new Response<>(401, "Unauthorized");
         }
 
-        String name = request.params(":name");
+        String name = request.queryParams("name");
         User currentUser  = authService.getUser(request);
         if (websiteRepository.addedByName(currentUser.getId(), name)) {
             return new Response<>(409, "Website is already added");

@@ -61,7 +61,7 @@ public Response<User> getCurrentUser(Request request){
     Optional<User> user = userRepository.findByName(name);
     try{
       if (user.isPresent()) {
-        if (!checkPassword(user.get().getPassword(), password)) {
+        if (!checkPassword(password, user.get().getPassword())) {
           return new Response<>(401, "Password not correct");
         }
         authService.setUser(request, user.get());

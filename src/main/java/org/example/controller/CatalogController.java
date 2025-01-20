@@ -20,7 +20,6 @@ public class CatalogController extends Controller {
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData();
                 }
-                //TODO OTHER ERRORS;
                 return serviceResponse.getMessage();
             });
 
@@ -31,19 +30,15 @@ public class CatalogController extends Controller {
                 if (serviceResponse.isSuccess()) {
                     return serviceResponse.getData();
                 }
-                //TODO OTHER ERRORS;
                 return serviceResponse.getMessage();
             });
 
             get("/user/:name", (request, response) -> {
-                //TODO rewrite
                 Response<Catalog> serviceResponse = service.getCatalog(request);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
                     return serviceResponse.getData().getName() + " successfully found";
                 }
-                //TODO OTHER ERRORS;
-
                 return serviceResponse.getMessage();
             });
 
@@ -53,8 +48,6 @@ public class CatalogController extends Controller {
                 if (serviceResponse.isSuccess()){
                     return serviceResponse.getData().getName() + " successfully added";
                 }
-                //TODO OTHER ERRORS;
-
                 return serviceResponse.getMessage();
             });
 

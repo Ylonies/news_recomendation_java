@@ -47,7 +47,7 @@ public class WebsiteController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            post("/user/basic/:name", (request, response) -> {
+            post("/user/basic", (request, response) -> {
                 Response<Website> serviceResponse = websiteService.addBasicByName(request);
                 response.status(serviceResponse.getStatusCode());
 
@@ -57,7 +57,7 @@ public class WebsiteController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            post("/user/custom/:name", (request, response) -> {
+            post("/user/custom", (request, response) -> {
                 Response<Website> serviceResponse = websiteService.addCustom(request);
                 response.status(serviceResponse.getStatusCode());
 
