@@ -6,6 +6,7 @@ import org.example.utils.DatabaseInitializer;
 import static spark.Spark.port;
 
 public class Main {
+
   public static void main(String[] args) {
     // Инициализация таблиц
     DatabaseInitializer databaseInitializer = new DatabaseInitializer(DataSourceConfig.getDataSource());
