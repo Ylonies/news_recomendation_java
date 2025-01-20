@@ -5,7 +5,7 @@ public enum ArticleIds {
   THREE_D(2),
   HI_TECH(3);
 
-  private int id;
+  private final int id;
 
   ArticleIds(int id) {
     this.id = id;

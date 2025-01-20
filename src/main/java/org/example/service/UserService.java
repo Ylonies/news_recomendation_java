@@ -2,8 +2,8 @@ package org.example.service;
 
 import org.example.entity.Response;
 import org.example.entity.User;
-import org.example.repository.UserRepository;
-import org.example.repository.UserRepositoryImpl;
+import org.example.repository.interfaces.UserRepository;
+import org.example.repository.Implementation.UserRepositoryImpl;
 import spark.Request;
 
 import java.sql.SQLException;

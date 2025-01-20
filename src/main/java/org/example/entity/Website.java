@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Website {
     private final UUID id;
-    private String name;
+    private final String name;
     private final String url;
     private final UUID userId;
 

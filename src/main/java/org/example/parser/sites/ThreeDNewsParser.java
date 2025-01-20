@@ -13,7 +13,7 @@ import java.util.UUID;
 public class ThreeDNewsParser extends BaseParser {
   private static final String BLOG_LINK = "https://3dnews.ru";
 
-  private int limitPageCount;
+  private final int limitPageCount;
 
   public ThreeDNewsParser() {
     this(10);

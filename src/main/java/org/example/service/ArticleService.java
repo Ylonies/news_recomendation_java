@@ -4,10 +4,9 @@ import org.example.dto.response.ArticleResponse;
 import org.example.entity.Article;
 import org.example.entity.Response;
 import org.example.entity.User;
-import org.example.repository.ArticleRepository;
-import org.example.repository.ArticleRepositoryImpl;
+import org.example.repository.interfaces.ArticleRepository;
+import org.example.repository.Implementation.ArticleRepositoryImpl;
 import spark.Request;
-import spark.Service;
 
 import java.util.ArrayList;
 import java.util.List;

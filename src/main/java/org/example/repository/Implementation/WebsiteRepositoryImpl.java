@@ -1,6 +1,7 @@
-package org.example.repository;
+package org.example.repository.Implementation;
 
 import org.example.entity.Website;
+import org.example.repository.interfaces.WebsiteRepository;
 import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;

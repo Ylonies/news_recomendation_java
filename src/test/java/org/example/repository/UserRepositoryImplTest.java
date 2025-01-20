@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.entity.User;
+import org.example.repository.Implementation.UserRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

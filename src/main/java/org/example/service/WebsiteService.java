@@ -3,8 +3,8 @@ package org.example.service;
 import org.example.entity.Response;
 import org.example.entity.User;
 import org.example.entity.Website;
-import org.example.repository.WebsiteRepository;
-import org.example.repository.WebsiteRepositoryImpl;
+import org.example.repository.interfaces.WebsiteRepository;
+import org.example.repository.Implementation.WebsiteRepositoryImpl;
 import spark.Request;
 
 import java.util.ArrayList;
