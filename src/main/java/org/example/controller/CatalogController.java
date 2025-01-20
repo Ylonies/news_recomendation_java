@@ -33,7 +33,7 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            get("/user/:name", (request, response) -> {
+            get("/user", (request, response) -> {
                 Response<Catalog> serviceResponse = service.getCatalog(request);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
@@ -42,8 +42,8 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            post("/user/:name", (request, response) -> {
-                Response<Catalog> serviceResponse = service.addCatalog(request);
+            post("/user/basic", (request, response) -> {
+                Response<Catalog> serviceResponse = service.addBasicCatalog(request);
                 response.status(serviceResponse.getStatusCode());
                 if (serviceResponse.isSuccess()){
                     return serviceResponse.getData().getName() + " successfully added";
@@ -51,7 +51,16 @@ public class CatalogController extends Controller {
                 return serviceResponse.getMessage();
             });
 
-            delete("/user/:name", (request, response) -> {
+            post("/user/custom", (request, response) -> {
+                Response<Catalog> serviceResponse = service.addCustomCatalog(request);
+                response.status(serviceResponse.getStatusCode());
+                if (serviceResponse.isSuccess()){
+                    return serviceResponse.getData().getName() + " successfully added";
+                }
+                return serviceResponse.getMessage();
+            });
+
+            delete("/user", (request, response) -> {
                 //TODO rewrite
                 String catalogName = request.params(":name");
                 response.status(501);

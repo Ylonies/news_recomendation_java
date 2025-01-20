@@ -55,7 +55,7 @@ public class CatalogService {
         if (!authService.isAuthenticated(request)) {
             return new Response<>(401, "Unauthorized");
         }
-        String name = request.params(":name");
+        String name = request.queryParams("name");
 
         User currentUser = authService.getUser(request);
         if (!catalogRepository.existsByName(currentUser.getId(), name)) {
@@ -69,20 +69,38 @@ public class CatalogService {
         }
     }
 
-    public Response<Catalog> addCatalog(Request request){
+    public Response<Catalog> addBasicCatalog(Request request){
         if (!authService.isAuthenticated(request)) {
             return new Response<>(401, "Unauthorized");
         }
-        String name = request.params(":name");
+        String name = request.queryParams("name");
 
 
         User currentUser = authService.getUser(request);
         if (catalogRepository.existsByName(currentUser.getId(), name)) {
-            return new Response<>(409, "Catalog is already added"); // Conflict
+            return new Response<>(409, "Catalog is already added");
         }
         try {
             Catalog catalog = catalogRepository.addToUser(currentUser.getId(), name);
-            return new Response<>(catalog); // Created
+            return new Response<>(catalog);
+        } catch (Exception e) {
+            return new Response<>(500);
+        }
+    }
+
+    public Response<Catalog> addCustomCatalog(Request request){
+        if (!authService.isAuthenticated(request)) {
+            return new Response<>(401, "Unauthorized");
+        }
+        String name = request.queryParams("name");
+
+        User currentUser = authService.getUser(request);
+        if (catalogRepository.existsByName(currentUser.getId(), name)) {
+            return new Response<>(409, "Catalog is already added");
+        }
+        try {
+            Catalog catalog = catalogRepository.addUserCatalog(currentUser.getId(), name);
+            return new Response<>(catalog);
         } catch (Exception e) {
             return new Response<>(500);
         }
