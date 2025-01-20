@@ -40,4 +40,6 @@ class ArticleRepositoryTest {
     repository.updateUserLastRequestTime(userId);
     System.out.println("User's last request time updated again.");
   }
+
 }
+

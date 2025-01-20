@@ -1,6 +1,8 @@
 package org.example.repository.Implementation;
 
 import org.example.entity.Article;
+import org.example.entity.Catalog;
+import org.example.entity.Website;
 import org.example.repository.interfaces.ArticleRepository;
 import org.example.utils.DataSourceConfig;
 
@@ -9,20 +11,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ArticleRepositoryImpl implements ArticleRepository {
 
   private final DataSource dataSource = DataSourceConfig.getDataSource();
 
   @Override
-  public List<Article> getNewArticles(UUID userId) {
+  public List<Article> getNewArticles(UUID userId, List<Catalog> catalogs, List<Website> websites) {
     String userLastRequestQuery = "SELECT time FROM user_time WHERE user_id = ?";
-    String newArticlesQuery = "SELECT * FROM articles WHERE creation_time > ?";
+    String newArticlesQuery = "SELECT a.* FROM articles a " +
+            "JOIN article_category ac ON a.article_id = ac.article_id " +
+            "WHERE ac.catalog_id IN (?) " + // Фильтрация по catalogId
+            "AND ac.website_id IN (?) " + // Фильтрация по websiteId
+            "AND a.creation_time > ?";
 
     List<Article> newArticles = new ArrayList<>();
 
     try (Connection connection = dataSource.getConnection()) {
       Timestamp lastRequestTime = null;
+
+      // Получаем время последнего запроса пользователя
       try (PreparedStatement statement = connection.prepareStatement(userLastRequestQuery)) {
         statement.setObject(1, userId);
         try (ResultSet resultSet = statement.executeQuery()) {
@@ -32,9 +41,23 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         }
       }
 
+      // Если время последнего запроса не null, ищем новые статьи
       if (lastRequestTime != null) {
         try (PreparedStatement statement = connection.prepareStatement(newArticlesQuery)) {
-          statement.setTimestamp(1, lastRequestTime);
+          // Преобразуем списки catalogs и websites в строку для SQL
+          String catalogIds = catalogs.stream()
+                  .map(Catalog::getId) // Предполагается, что у Catalog есть метод getId()
+                  .map(UUID::toString)
+                  .collect(Collectors.joining(","));
+          String websiteIds = websites.stream()
+                  .map(Website::getId) // Предполагается, что у Website есть метод getId()
+                  .map(UUID::toString)
+                  .collect(Collectors.joining(","));
+
+          statement.setString(1, catalogIds); // Устанавливаем catalogIds
+          statement.setString(2, websiteIds); // Устанавливаем websiteIds
+          statement.setTimestamp(3, lastRequestTime); // Устанавливаем время последнего запроса
+
           try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
               UUID articleId = (UUID) resultSet.getObject("article_id");
@@ -112,11 +135,12 @@ public class ArticleRepositoryImpl implements ArticleRepository {
       Thread.currentThread().interrupt();
     }
 
-    repository.getNewArticles(userId).forEach(articleItem -> {
-      System.out.println("New article: " + articleItem.name());
-    });
-
-    repository.updateUserLastRequestTime(userId);
-    System.out.println("User's last request time updated again.");
+//    repository.getNewArticles(userId).forEach(articleItem -> {
+//      System.out.println("New article: " + articleItem.name());
+//    });
+//
+//    repository.updateUserLastRequestTime(userId);
+//    System.out.println("User's last request time updated again.");
+//  }
   }
 }
