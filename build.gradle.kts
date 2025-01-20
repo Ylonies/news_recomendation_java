@@ -27,7 +27,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.0") // Убедитесь, что версия актуальна
     implementation("org.projectlombok:lombok:1.18.28")
 
-    implementation("com.zaxxer:HikariCP:2.3.2")
+    implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("io.github.cdimascio:dotenv-java:3.1.0")
 
     implementation("io.jsonwebtoken:jjwt:0.9.1")

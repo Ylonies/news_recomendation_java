@@ -14,7 +14,7 @@ public class CatalogRepositoryImpl implements CatalogRepository {
 
   @Override
   public List<Catalog> getBasicCatalogs() {
-    String sql = "SELECT catalog_id, name FROM catalogs";
+    String sql = "SELECT catalog_id, name FROM catalogs WHERE is_basic = true";
     List<Catalog> catalogs = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql);
@@ -63,7 +63,7 @@ public class CatalogRepositoryImpl implements CatalogRepository {
       statement.setObject(1, userId);
       statement.setString(2, name);
       try (ResultSet resultSet = statement.executeQuery()) {
-        return resultSet.next();  // Если строка существует, вернется true
+        return resultSet.next();
       }
     } catch (SQLException e) {
       throw new RuntimeException("Error checking if catalog exists", e);
@@ -94,129 +94,119 @@ public class CatalogRepositoryImpl implements CatalogRepository {
   }
 
   @Override
-  public Catalog addByName(UUID userId, String name) {
-    return null;
-  }
-
-  public void addUserCatalog(UUID userId, String catalogName) {
-    // Сначала проверим, существует ли такой каталог в таблице catalogs
-    String checkCatalogSql = "SELECT catalog_id FROM catalogs WHERE name = ?";
-    UUID catalogId = null;
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement checkCatalogStatement = connection.prepareStatement(checkCatalogSql)) {
-      checkCatalogStatement.setString(1, catalogName);
-      try (ResultSet resultSet = checkCatalogStatement.executeQuery()) {
-        if (resultSet.next()) {
-          // Если каталог существует, получаем его ID
-          catalogId = (UUID) resultSet.getObject("catalog_id");
-        }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException("Error checking if catalog exists", e);
-    }
-
-    // Если каталог не существует, создаем новый каталог в таблице catalogs
-    if (catalogId == null) {
-      String insertCatalogSql = "INSERT INTO catalogs (name) VALUES (?) RETURNING catalog_id";
-      try (Connection connection = dataSource.getConnection();
-           PreparedStatement insertCatalogStatement = connection.prepareStatement(insertCatalogSql)) {
-        insertCatalogStatement.setString(1, catalogName);
-        try (ResultSet resultSet = insertCatalogStatement.executeQuery()) {
-          if (resultSet.next()) {
-            catalogId = (UUID) resultSet.getObject("catalog_id");
-          }
-        }
-      } catch (SQLException e) {
-        throw new RuntimeException("Error inserting new catalog", e);
-      }
-    }
-
-    // Теперь добавляем этот каталог в таблицу user_catalog для данного пользователя
-    String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement insertUserCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
-      insertUserCatalogStatement.setObject(1, userId, Types.OTHER);
-      insertUserCatalogStatement.setObject(2, catalogId, Types.OTHER);
-      insertUserCatalogStatement.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException("Error adding catalog to user", e);
-    }
-  }
-
-  public void addToUser(UUID userId, UUID catalogId) {
-    // Проверим, существует ли каталог в таблице catalogs
-    String checkCatalogSql = "SELECT 1 FROM catalogs WHERE catalog_id = ?";
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement checkCatalogStatement = connection.prepareStatement(checkCatalogSql)) {
-      checkCatalogStatement.setObject(1, catalogId, Types.OTHER);
-      try (ResultSet resultSet = checkCatalogStatement.executeQuery()) {
-        if (!resultSet.next()) {
-          throw new IllegalArgumentException("Catalog with ID " + catalogId + " does not exist.");
-        }
-
-        // Если каталог существует, добавляем его в user_catalog
-        String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id) VALUES (?, ?)";
-        try (PreparedStatement insertUserCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
-          insertUserCatalogStatement.setObject(1, userId, Types.OTHER);
-          insertUserCatalogStatement.setObject(2, catalogId, Types.OTHER);
-          insertUserCatalogStatement.executeUpdate();
-        }
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException("Error adding existing catalog to user", e);
-    }
-  }
-
-
-  @Override
   public void deleteByName(UUID userId, String name) {
-    String sql = "DELETE FROM catalogs c USING user_catalog uc " +
-        "WHERE c.catalog_id = uc.catalog_id " +
-        "AND uc.user_id = ? AND c.name = ?";
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setObject(1, userId);
-      statement.setString(2, name);
-      statement.executeUpdate();
+    if (!existsByName(userId, name)) {
+      throw new RuntimeException("Catalog does not exist for the user");
+    }
+
+    String deleteUserCatalogSql = "DELETE FROM user_catalog WHERE user_id = ? AND catalog_id = (SELECT catalog_id FROM catalogs WHERE name = ?)";
+
+    try (Connection connection = dataSource.getConnection()) {
+      try (PreparedStatement deleteUserCatalogStatement = connection.prepareStatement(deleteUserCatalogSql)) {
+        deleteUserCatalogStatement.setObject(1, userId);
+        deleteUserCatalogStatement.setString(2, name);
+        deleteUserCatalogStatement.executeUpdate();
+      }
+
+      String deleteCatalogSql = "DELETE FROM catalogs WHERE catalog_id = (SELECT catalog_id FROM catalogs WHERE name = ?)";
+      try (PreparedStatement deleteCatalogStatement = connection.prepareStatement(deleteCatalogSql)) {
+        deleteCatalogStatement.setString(1, name);
+        deleteCatalogStatement.executeUpdate();
+      }
     } catch (SQLException e) {
       throw new RuntimeException("Error deleting catalog", e);
     }
   }
 
-  public static void main(String[] args) {
-    CatalogRepositoryImpl repository = new CatalogRepositoryImpl();
-    UUID userId = (UUID.fromString("276c22e1-43be-4e9c-9516-736fa350c711"));
 
-    // Добавляем каталог для пользователя
-    String catalogName = "имя каталога";
-    repository.addUserCatalog(userId, catalogName);
-    System.out.println("Catalog added for user: " + catalogName);
+  @Override
+  public Catalog addToUser(UUID userId, String name) {
+    String checkCatalogSql = "SELECT catalog_id, name FROM catalogs WHERE name = ? AND is_basic = true";
+    String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id, name) VALUES (?, ?, ?)";
 
-    // Получаем каталоги пользователя
-    List<Catalog> userCatalogs = repository.getUserCatalogs(userId);
-    System.out.println("User catalogs:");
-    userCatalogs.forEach(catalog -> System.out.println("Catalog name: " + catalog.getName()));
+    try (Connection connection = dataSource.getConnection()) {
+      try (PreparedStatement checkStatement = connection.prepareStatement(checkCatalogSql)) {
+        checkStatement.setString(1, name);
+        try (ResultSet resultSet = checkStatement.executeQuery()) {
+          if (resultSet.next()) {
+            UUID catalogId = (UUID) resultSet.getObject("catalog_id");
 
-    // Проверяем, существует ли каталог по имени для пользователя
-    boolean exists = repository.existsByName(userId, catalogName);
-    System.out.println("Catalog exists by name '" + catalogName + "': " + exists);
-
-    // Получаем базовые каталоги
-    List<Catalog> basicCatalogs = repository.getBasicCatalogs();
-    System.out.println("Basic catalogs:");
-    basicCatalogs.forEach(catalog -> System.out.println("Catalog name: " + catalog.getName()));
-
-    // Получаем каталог по имени для пользователя
-    Catalog catalogByName = repository.getByName(userId, catalogName);
-    if (catalogByName != null) {
-      System.out.println("Catalog found by name '" + catalogName + "': " + catalogByName.getName());
-    } else {
-      System.out.println("Catalog not found by name '" + catalogName + "'.");
+            try (PreparedStatement userWebsiteStatement = connection.prepareStatement(insertUserCatalogSql)) {
+              userWebsiteStatement.setObject(1, userId);
+              userWebsiteStatement.setObject(2, catalogId);
+              userWebsiteStatement.setString(3, name);
+              userWebsiteStatement.executeUpdate();
+            }
+            return new Catalog(catalogId, name, userId);
+          } else {
+            throw new RuntimeException("Catalog does not exist or is not basic (is_basic = true).");
+          }
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Error saving catalog for user", e);
     }
-
-    // Удаляем каталог по имени для пользователя
-    repository.deleteByName(userId, catalogName);
-    System.out.println("Catalog '" + catalogName + "' deleted for user.");
   }
 
+  @Override
+  public Catalog addUserCatalog(UUID userId, String name) {
+    String checkCatalogSql = "SELECT catalog_id, name FROM catalogs WHERE name = ?";
+
+    String insertUserCatalogSql = "INSERT INTO user_catalog (user_id, catalog_id, name) VALUES (?, ?, ?)";
+
+    try (Connection connection = dataSource.getConnection()) {
+      try (PreparedStatement checkStatement = connection.prepareStatement(checkCatalogSql)) {
+        checkStatement.setString(1, name);
+        try (ResultSet resultSet = checkStatement.executeQuery()) {
+          if (resultSet.next()) {
+            UUID catalogId = (UUID) resultSet.getObject("catalog_id");
+            String catalogName = resultSet.getString("name");
+
+            String checkUserCatalogSql = "SELECT 1 FROM user_catalog WHERE user_id = ? AND catalog_id = ?";
+            try (PreparedStatement checkUserCatalogStatement = connection.prepareStatement(checkUserCatalogSql)) {
+              checkUserCatalogStatement.setObject(1, userId);
+              checkUserCatalogStatement.setObject(2, catalogId);
+
+              try (ResultSet checkResultSet = checkUserCatalogStatement.executeQuery()) {
+                if (!checkResultSet.next()) {
+                  try (PreparedStatement userCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
+                    userCatalogStatement.setObject(1, userId);
+                    userCatalogStatement.setObject(2, catalogId);
+                    userCatalogStatement.setString(3, catalogName);
+                    userCatalogStatement.executeUpdate();
+                  }
+                }
+              }
+            }
+
+            return new Catalog(catalogId, catalogName, userId);
+          } else {
+            String insertCatalogSql = "INSERT INTO catalogs (name, is_basic) VALUES (?, ?) RETURNING catalog_id";
+            try (PreparedStatement insertCatalogStatement = connection.prepareStatement(insertCatalogSql)) {
+              insertCatalogStatement.setString(1, name);
+              insertCatalogStatement.setBoolean(2, false);
+
+              try (ResultSet insertResultSet = insertCatalogStatement.executeQuery()) {
+                if (insertResultSet.next()) {
+                  UUID catalogId = (UUID) insertResultSet.getObject("catalog_id");
+
+                  try (PreparedStatement userCatalogStatement = connection.prepareStatement(insertUserCatalogSql)) {
+                    userCatalogStatement.setObject(1, userId);
+                    userCatalogStatement.setObject(2, catalogId);
+                    userCatalogStatement.setString(3, name);
+                    userCatalogStatement.executeUpdate();
+                  }
+
+                  return new Catalog(catalogId, name, userId);
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Error adding user catalog", e);
+    }
+    return null;
+  }
 }
