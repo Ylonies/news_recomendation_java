@@ -3,8 +3,6 @@ import org.example.controller.ControllerManager;
 import org.example.utils.DataSourceConfig;
 import org.example.utils.DatabaseInitializer;
 
-import static spark.Spark.port;
-
 public class Main {
 
   public static void main(String[] args) {

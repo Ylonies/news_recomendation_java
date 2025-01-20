@@ -1,6 +1,8 @@
 package org.example.repository;
 
 import org.example.entity.Article;
+import org.example.repository.Implementation.ArticleRepositoryImpl;
+import org.example.repository.Implementation.UserRepositoryImpl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;

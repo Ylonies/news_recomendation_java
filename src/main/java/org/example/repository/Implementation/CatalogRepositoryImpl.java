@@ -1,6 +1,7 @@
-package org.example.repository;
+package org.example.repository.Implementation;
 
 import org.example.entity.Catalog;
+import org.example.repository.interfaces.CatalogRepository;
 import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;
