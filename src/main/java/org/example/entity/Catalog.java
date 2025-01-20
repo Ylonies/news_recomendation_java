@@ -3,9 +3,9 @@ package org.example.entity;
 import java.util.UUID;
 
 public class Catalog {
-    private UUID id;
-    private String name;
-    private UUID userId;
+    private final UUID id;
+    private final String name;
+    private final UUID userId;
 
     public Catalog(UUID id, String name, UUID userId){
         this.id = id;

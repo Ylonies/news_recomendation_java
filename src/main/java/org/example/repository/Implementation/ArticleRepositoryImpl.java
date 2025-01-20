@@ -1,6 +1,7 @@
-package org.example.repository;
+package org.example.repository.Implementation;
 
 import org.example.entity.Article;
+import org.example.repository.interfaces.ArticleRepository;
 import org.example.utils.DataSourceConfig;
 
 import javax.sql.DataSource;

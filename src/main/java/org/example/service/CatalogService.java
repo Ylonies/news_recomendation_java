@@ -3,8 +3,8 @@ package org.example.service;
 import org.example.entity.Catalog;
 import org.example.entity.Response;
 import org.example.entity.User;
-import org.example.repository.CatalogRepository;
-import org.example.repository.CatalogRepositoryImpl;
+import org.example.repository.interfaces.CatalogRepository;
+import org.example.repository.Implementation.CatalogRepositoryImpl;
 import spark.Request;
 
 import java.util.ArrayList;

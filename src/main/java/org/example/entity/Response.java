@@ -1,8 +1,8 @@
 package org.example.entity;
 
 public class Response<T> {
-    private int statusCode;
-    private T data;
+    private final int statusCode;
+    private final T data;
     private String message = "";
 
     public Response(T data) {

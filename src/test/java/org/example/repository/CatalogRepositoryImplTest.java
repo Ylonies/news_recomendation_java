@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.entity.Catalog;
+import org.example.repository.Implementation.CatalogRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
