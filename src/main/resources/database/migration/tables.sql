@@ -10,30 +10,32 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE TABLE IF NOT EXISTS websites (
                                         website_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
                                         name text NOT NULL,
-                                        url text
+                                        url text,
+                                        is_basic boolean
 );
 
-INSERT INTO websites (website_id, name, url)
-VALUES ('00000000-0000-0000-0000-000000000000', 'INFOQ', 'https://www.infoq.com/development'),
-       ('00000000-0000-0000-0000-000000000001', 'THREE_D', 'https://3dnews.ru'),
-       ('00000000-0000-0000-0000-000000000002', 'HI_TECH', 'https://hi-tech.mail.ru/news/');
+INSERT INTO websites (name, url, is_basic)
+VALUES ('INFOQ', 'https://www.infoq.com/development', true),
+       ('THREE_D', 'https://3dnews.ru', true),
+       ('HI_TECH', 'https://hi-tech.mail.ru/news/', true);
 
 CREATE TABLE IF NOT EXISTS catalogs (
                                         catalog_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-                                        name text NOT NULL
+                                        name text NOT NULL,
+                                        is_basic boolean
 );
 
-INSERT INTO catalogs (catalog_id, name)
-VALUES ('00000000-0000-0000-0000-000000000000', 'DevOps'),
-       ('00000000-0000-0000-0000-000000000001', 'Frontend'),
-       ('00000000-0000-0000-0000-000000000002', 'Backend'),
-       ('00000000-0000-0000-0000-000000000003', 'Data Science'),
-       ('00000000-0000-0000-0000-000000000004', 'Machine Learning'),
-       ('00000000-0000-0000-0000-000000000005', 'Cybersecurity'),
-       ('00000000-0000-0000-0000-000000000006', 'Cloud Computing'),
-       ('00000000-0000-0000-0000-000000000007', 'Mobile Development'),
-       ('00000000-0000-0000-0000-000000000008', 'Game Development'),
-       ('00000000-0000-0000-0000-000000000009', 'Databases');
+INSERT INTO catalogs (name, is_basic)
+VALUES ('DevOps', true),
+       ('Frontend', true),
+       ('Backend', true),
+       ('Data Science', true),
+       ('Machine Learning', true),
+       ('Cybersecurity', true),
+       ('Cloud Computing', true),
+       ('Mobile Development', true),
+       ('Game Development', true),
+       ('Databases', true);
 
 CREATE TABLE IF NOT EXISTS users (
                                      user_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -61,6 +63,7 @@ CREATE TABLE IF NOT EXISTS article_category (
 CREATE TABLE IF NOT EXISTS user_catalog (
                                             user_id UUID NOT NULL,
                                             catalog_id UUID NOT NULL,
+                                            name text,
                                             PRIMARY KEY (user_id, catalog_id),
                                             CONSTRAINT user_catalog_user_id_fk FOREIGN KEY (user_id) REFERENCES users (user_id),
                                             CONSTRAINT user_catalog_catalog_id_fk FOREIGN KEY (catalog_id) REFERENCES catalogs (catalog_id)

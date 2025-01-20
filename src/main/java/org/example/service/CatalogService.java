@@ -5,9 +5,7 @@ import org.example.entity.Response;
 import org.example.entity.User;
 import org.example.repository.CatalogRepository;
 import org.example.repository.CatalogRepositoryImpl;
-import org.example.repository.MockCatalogRepository;
 import spark.Request;
-import spark.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +81,7 @@ public class CatalogService {
             return new Response<>(409, "Catalog is already added"); // Conflict
         }
         try {
-            Catalog catalog = catalogRepository.addByName(currentUser.getId(), name);
+            Catalog catalog = catalogRepository.addToUser(currentUser.getId(), name);
             return new Response<>(catalog); // Created
         } catch (Exception e) {
             return new Response<>(500);
