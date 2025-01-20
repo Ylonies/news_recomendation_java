@@ -12,7 +12,6 @@ public class Main {
     ControllerManager controllerManager = new ControllerManager();
     controllerManager.startAll();
 
-    
 
   }
 }

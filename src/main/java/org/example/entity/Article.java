@@ -23,16 +23,6 @@ public class Article {
         this.websiteID = null;// По умолчанию catalogID равен null
     }
 
-
-    public Article(UUID id, String name, String description, String date, String link, UUID catalogID) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.link = link;
-        this.catalogID = catalogID;
-    }
-
     public UUID id() {
         return id;
     }
@@ -53,11 +43,11 @@ public class Article {
         return link;
     }
 
-    public UUID catalogID() {
+    public UUID catalogId() {
         return catalogID;
     }
 
-    public UUID websiteID(){
+    public UUID websiteId(){
         return websiteID;
     }
 

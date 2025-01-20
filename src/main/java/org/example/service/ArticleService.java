@@ -1,5 +1,6 @@
 package org.example.service;
 
+
 import org.example.dto.response.ArticleResponse;
 import org.example.entity.*;
 import org.example.repository.Implementation.CatalogRepositoryImpl;
@@ -52,16 +53,29 @@ public class ArticleService {
             return new Response<>(401, "Unauthorized");
         }
 
+        User currentUser = authService.getUser(request);
+        UUID userId = currentUser.getId();
+
         UUID id = UUID.randomUUID();
         String name = request.queryParams("name");
         String description = request.queryParams("description");
         String link = request.queryParams("link");
+        String catalogName = request.queryParams("catalog");
+        String websiteName = request.queryParams("website");
+
+        Catalog catalog = catalogRepository.getByName(userId, catalogName);
+        Website website = websiteRepository.getByName(userId, websiteName);
+
 
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDate = today.format(formatter);
 
-        Article article = new Article(id, name, description, link, formattedDate);
+        Article article = new Article(id, name, description, formattedDate, link);
+        article.setCatalogID(catalog.getId());
+        article.setWebsiteID(website.getId());
+
+
         articleRepository.saveArticle(article);
         try{
             return new Response<>(article);

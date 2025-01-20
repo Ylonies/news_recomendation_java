@@ -19,44 +19,45 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
   @Override
   public List<Article> getNewArticles(UUID userId, List<Catalog> catalogs, List<Website> websites) {
-    String userLastRequestQuery = "SELECT time FROM user_time WHERE user_id = ?";
-    String newArticlesQuery = "SELECT a.* FROM articles a " +
-            "JOIN article_category ac ON a.article_id = ac.article_id " +
-            "WHERE ac.catalog_id IN (?) " + // Фильтрация по catalogId
-            "AND ac.website_id IN (?) " + // Фильтрация по websiteId
-            "AND a.creation_time > ?";
-
     List<Article> newArticles = new ArrayList<>();
 
     try (Connection connection = dataSource.getConnection()) {
-      Timestamp lastRequestTime = null;
+      Timestamp lastRequestTime = getUserLastRequestTime(userId);
 
-      // Получаем время последнего запроса пользователя
-      try (PreparedStatement statement = connection.prepareStatement(userLastRequestQuery)) {
-        statement.setObject(1, userId);
-        try (ResultSet resultSet = statement.executeQuery()) {
-          if (resultSet.next()) {
-            lastRequestTime = resultSet.getTimestamp("time");
-          }
-        }
-      }
-
-      // Если время последнего запроса не null, ищем новые статьи
       if (lastRequestTime != null) {
-        try (PreparedStatement statement = connection.prepareStatement(newArticlesQuery)) {
-          // Преобразуем списки catalogs и websites в строку для SQL
-          String catalogIds = catalogs.stream()
-                  .map(Catalog::getId) // Предполагается, что у Catalog есть метод getId()
-                  .map(UUID::toString)
-                  .collect(Collectors.joining(","));
-          String websiteIds = websites.stream()
-                  .map(Website::getId) // Предполагается, что у Website есть метод getId()
-                  .map(UUID::toString)
-                  .collect(Collectors.joining(","));
+        // 1. Создание временной таблицы
+        String createTempTableQuery = "CREATE TEMPORARY TABLE temp_articles AS " +
+                "SELECT a.* FROM articles a " +
+                "WHERE a.creation_time > ?";
 
-          statement.setString(1, catalogIds); // Устанавливаем catalogIds
-          statement.setString(2, websiteIds); // Устанавливаем websiteIds
-          statement.setTimestamp(3, lastRequestTime); // Устанавливаем время последнего запроса
+        String dropTempTableQuery = "DROP TABLE IF EXISTS temp_articles";
+        try (PreparedStatement dropTempTableStmt = connection.prepareStatement(dropTempTableQuery)) {
+          dropTempTableStmt.executeUpdate();
+        }
+
+        try (PreparedStatement createTempTableStmt = connection.prepareStatement(createTempTableQuery)) {
+          createTempTableStmt.setTimestamp(1, lastRequestTime);
+          createTempTableStmt.executeUpdate();
+        }
+
+        // 2. Поиск по категориям
+        String newArticlesQuery = "SELECT ta.* FROM temp_articles ta " +
+                "JOIN article_category ac ON ta.article_id = ac.article_id " +
+                "WHERE ac.catalog_id IN (" +
+                catalogs.stream().map(c -> "?").collect(Collectors.joining(", ")) + ") " +
+                "AND ac.website_id IN (" +
+                websites.stream().map(w -> "?").collect(Collectors.joining(", ")) + ")";
+
+        try (PreparedStatement statement = connection.prepareStatement(newArticlesQuery)) {
+          // Устанавливаем значения для catalogIds
+          int index = 1;
+          for (Catalog catalog : catalogs) {
+            statement.setObject(index++, catalog.getId());
+          }
+          // Устанавливаем значения для websiteIds
+          for (Website website : websites) {
+            statement.setObject(index++, website.getId());
+          }
 
           try (ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -83,15 +84,28 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     if (article == null) {
       throw new IllegalArgumentException("Article cannot be null");
     }
+
     String insertArticle = "INSERT INTO articles (article_id, name, description, date, link) VALUES (?, ?, ?, ?, ?)";
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement statement = connection.prepareStatement(insertArticle)) {
-      statement.setObject(1, article.id());
-      statement.setString(2, article.name());
-      statement.setString(3, article.description());
-      statement.setString(4, article.date());
-      statement.setString(5, article.link());
-      statement.executeUpdate();
+    String insertArticleCategory = "INSERT INTO article_category (article_id, catalog_id, website_id) VALUES (?, ?, ?)";
+
+    try (Connection connection = dataSource.getConnection()) {
+      // Вставка статьи в таблицу articles
+      try (PreparedStatement statement = connection.prepareStatement(insertArticle)) {
+        statement.setObject(1, article.id());
+        statement.setString(2, article.name());
+        statement.setString(3, article.description());
+        statement.setString(4, article.date());
+        statement.setString(5, article.link());
+        statement.executeUpdate();
+      }
+
+      // Вставка в таблицу article_category
+      try (PreparedStatement statement = connection.prepareStatement(insertArticleCategory)) {
+        statement.setObject(1, article.id()); // Используем тот же article_id
+        statement.setObject(2, article.catalogId()); // Предполагается, что у Article есть метод catalogId()
+        statement.setObject(3, article.websiteId()); // Предполагается, что у Article есть метод websiteId()
+        statement.executeUpdate();
+      }
     } catch (SQLException e) {
       throw new RuntimeException("Error saving article", e);
     }
@@ -110,6 +124,25 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     } catch (SQLException e) {
       throw new RuntimeException("Error updating last request time for user", e);
     }
+  }
+
+  public Timestamp getUserLastRequestTime(UUID userId) {
+    String query = "SELECT time FROM user_time WHERE user_id = ?";
+    Timestamp lastRequestTime = null;
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setObject(1, userId);
+
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          lastRequestTime = resultSet.getTimestamp("time");
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Error fetching last request time for user", e);
+    }
+    return lastRequestTime;
   }
 
   public static void main(String[] args) {
