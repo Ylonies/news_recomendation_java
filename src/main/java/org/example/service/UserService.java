@@ -45,7 +45,8 @@ public Response<User> getCurrentUser(Request request){
     if (userRepository.exists(name)) {
       return new Response<>(401, "User Already Exist");
     }
-    Optional<User> user = userRepository.save(name, hashPassword(password));
+    String passwordHash = hashPassword(password);
+    Optional<User> user = userRepository.save(name, passwordHash);
     if (user.isPresent()){
       return new Response<>(user.get());
     }
@@ -54,22 +55,26 @@ public Response<User> getCurrentUser(Request request){
     }
   }
 
-  public Response<User> loginUser (Request request) {
+  public Response<User> loginUser(Request request) {
     String name = request.queryParams("name");
     String password = request.queryParams("password");
 
     Optional<User> user = userRepository.findByName(name);
-    try{
+    try {
       if (user.isPresent()) {
-        if (!checkPassword(user.get().getPassword(), password)) {
+        String storedHash = user.get().getPassword();
+
+        if (!checkPassword(password, storedHash)) {
           return new Response<>(401, "Password not correct");
         }
+
         authService.setUser(request, user.get());
         return new Response<>(user.get());
       }
-    } catch(Exception e){
-      return new Response<>(500, "Internal server error in user");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Response<>(500, "Internal server error in user: " + e.getMessage());
     }
-    return new Response<>(401, "User  with this name doesn't exist");
+    return new Response<>(401, "User with this name doesn't exist");
   }
 }

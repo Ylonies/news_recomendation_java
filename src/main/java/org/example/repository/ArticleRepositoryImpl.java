@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class ArticleRepositoryImpl implements ArticleRepository {
-
   private final DataSource dataSource = DataSourceConfig.getDataSource();
 
   @Override
@@ -112,7 +111,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     repository.getNewArticles(userId).forEach(articleItem -> {
-      System.out.println("New article: " + articleItem.name());
+      System.out.println(articleItem);
     });
 
     repository.updateUserLastRequestTime(userId);

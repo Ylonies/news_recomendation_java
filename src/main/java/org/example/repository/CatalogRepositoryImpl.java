@@ -209,4 +209,9 @@ public class CatalogRepositoryImpl implements CatalogRepository {
     }
     return null;
   }
+
+  public static void main(String[] args) {
+    CatalogRepositoryImpl repository = new CatalogRepositoryImpl();
+    System.out.println(repository.addToUser(UUID.fromString("bf1c78f6-6694-457d-a089-399d09aa294f"), "DevOps"));
+  }
 }

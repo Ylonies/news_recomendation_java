@@ -74,7 +74,7 @@ public class WebsiteRepositoryImpl implements WebsiteRepository {
 
   @Override
   public boolean existsByName(String name) {
-    String sql = "SELECT * FROM websites w WHERE w.name = ?";
+    String sql = "SELECT * FROM websites w WHERE w.name = ? AND w.is_basic = true";
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
       statement.setString(1, name);
