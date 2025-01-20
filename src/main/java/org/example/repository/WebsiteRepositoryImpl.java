@@ -23,8 +23,7 @@ public class WebsiteRepositoryImpl implements WebsiteRepository {
         UUID websiteId = (UUID) resultSet.getObject("website_id");
         String name = resultSet.getString("name");
         String url = resultSet.getString("url");
-        UUID userId = (UUID) resultSet.getObject("user_id");
-        websites.add(new Website(websiteId, name, url, userId));
+        websites.add(new Website(websiteId, name, url, null));
       }
     } catch (SQLException e) {
       throw new RuntimeException("Error fetching basic websites", e);
