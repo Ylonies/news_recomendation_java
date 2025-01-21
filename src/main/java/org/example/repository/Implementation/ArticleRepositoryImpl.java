@@ -113,7 +113,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
   @Override
   public void updateUserLastRequestTime(UUID userId) {
-    String updateTimeQuery = "INSERT INTO user_time (user_id, time) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET time = EXCLUDED.time";
+    String updateTimeQuery = "INSERT INTO last_request_time (user_id, time) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET time = EXCLUDED.time";
 
     try (Connection connection = dataSource.getConnection();
          PreparedStatement statement = connection.prepareStatement(updateTimeQuery)) {
@@ -127,7 +127,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   public Timestamp getUserLastRequestTime(UUID userId) {
-    String query = "SELECT time FROM user_time WHERE user_id = ?";
+    String query = "SELECT time FROM last_request_time WHERE user_id = ?";
     Timestamp lastRequestTime = null;
 
     try (Connection connection = dataSource.getConnection();
@@ -143,6 +143,21 @@ public class ArticleRepositoryImpl implements ArticleRepository {
       throw new RuntimeException("Error fetching last request time for user", e);
     }
     return lastRequestTime;
+  }
+
+
+  @Override
+  public void saveArticleCategory(UUID articleId, UUID catalogId, UUID websiteId) {
+    String sql = "INSERT INTO article_category (article_id, catalog_id, website_id) VALUES (?, ?, ?)";
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+      statement.setObject(1, articleId);
+      statement.setObject(2, catalogId);
+      statement.setObject(3, websiteId);
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Error saving article-category relation", e);
+    }
   }
 
   public static void main(String[] args) {

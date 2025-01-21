@@ -1,5 +1,6 @@
 package org.example;
 import org.example.controller.ControllerManager;
+import org.example.parser.ScheduledParserExecutor;
 import org.example.utils.DataSourceConfig;
 import org.example.utils.DatabaseInitializer;
 
@@ -11,7 +12,7 @@ public class Main {
     databaseInitializer.initializeDatabase();
     ControllerManager controllerManager = new ControllerManager();
     controllerManager.startAll();
-
+    new ScheduledParserExecutor();
 
   }
 }

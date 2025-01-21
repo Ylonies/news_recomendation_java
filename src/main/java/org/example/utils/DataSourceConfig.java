@@ -18,6 +18,10 @@ public class DataSourceConfig {
     config.setJdbcUrl(String.format("jdbc:postgresql://%s:%s/%s", dbHost, dbPort, dbName));
     config.setUsername(dbUser);
     config.setPassword(dbPassword);
+    config.setMaximumPoolSize(5);
+    config.setIdleTimeout(5);  // Время простоя соединений в миллисекундах
+    config.setMaxLifetime(30000);
     return new HikariDataSource(config);
+
   }
 }

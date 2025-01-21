@@ -54,11 +54,11 @@ CREATE TABLE IF NOT EXISTS users (
                                      name text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_time (
-                                         user_id UUID NOT NULL,
-                                         time timestamp NOT NULL,
-                                         PRIMARY KEY (user_id),
-                                         CONSTRAINT user_time_user_id_fk FOREIGN KEY (user_id) REFERENCES users (user_id)
+CREATE TABLE IF NOT EXISTS last_request_time (
+                                                 user_id UUID NOT NULL,
+                                                 time timestamp NOT NULL,
+                                                 PRIMARY KEY (user_id),
+                                                 CONSTRAINT last_request_time_user_id_fk FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS article_category (

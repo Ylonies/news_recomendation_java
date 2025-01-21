@@ -31,7 +31,7 @@ public class UserController extends Controller {
                 return userResponse.getMessage();
             });
 
-            get("/current_user", (req, res) -> {
+            get("/", (req, res) -> {
                 Response<User> userResponse = userService.getCurrentUser(req);
                 res.status(userResponse.getStatusCode());
                 if (userResponse.isSuccess()){

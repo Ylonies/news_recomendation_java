@@ -75,7 +75,6 @@ public class CatalogService {
         }
         String name = request.queryParams("name");
 
-
         User currentUser = authService.getUser(request);
         if (catalogRepository.existsByName(currentUser.getId(), name)) {
             return new Response<>(409, "Catalog is already added");

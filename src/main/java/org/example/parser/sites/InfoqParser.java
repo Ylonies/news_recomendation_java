@@ -2,6 +2,7 @@ package org.example.parser.sites;
 
 import org.example.entity.Article;
 import org.example.parser.BaseParser;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -34,8 +35,9 @@ public class InfoqParser extends BaseParser {
   }
 
   @Override
-  protected Article getArticle(String link) {
-    return getArticle(DOMAIN + link);
+  public Article getArticle(String link) {
+    Document page = getPage(DOMAIN + link);
+    return getArticle(link, page);  // Теперь вызываем метод, который принимает уже полученную страницу
   }
 
   @Override

@@ -9,11 +9,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class UserRepositoryImpl implements UserRepository {
   private final DataSource dataSource = DataSourceConfig.getDataSource();
+
+
+  @Override
+  public List<User> findAll() {
+    String sql = "SELECT user_id, name, password FROM users";
+    List<User> users = new ArrayList<>();
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql);
+         ResultSet resultSet = statement.executeQuery()) {
+      while (resultSet.next()) {
+        UUID userId = (UUID) resultSet.getObject("user_id");
+        String name = resultSet.getString("name");
+        String password = resultSet.getString("password");
+        users.add(new User(userId, name, password));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return users;
+  }
 
   @Override
   public Optional<User> save(String name, String password) {

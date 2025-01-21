@@ -24,4 +24,7 @@ public class Catalog {
     public String getName() {
         return name;
     }
+    public UUID getUserId() {
+        return userId;
+    }
 }
