@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Api Documentation
-  description: News Recommendation Service
+  description: News Recommendation Controller
   version: 1.0.11
 
 tags:
@@ -128,7 +128,7 @@ paths:
         - catalog
       summary: Adds catalog with current name
       description: ""
-      operationId: addCatalog
+      operationId: addCustomCatalog
       security:
         - BasicHttpAuthentication: []
       parameters:
@@ -268,7 +268,7 @@ paths:
           description: service not found
 
 
-  /atricle/{id}:
+  /article/{id}:
     get:
       tags:
         - article
@@ -346,13 +346,13 @@ paths:
           description: not authenticated
         '402':
           description: service not found
-  /atricle/{catalogName}:
+  /atricle/catalog/{catalogName}:
     get:
       tags:
         - article
       summary: Returns articles with current catalog name
       description: ""
-      operationId: getArticleWithTopic
+      operationId: getArticleWithCatalog
       security:
         - BasicHttpAuthentication: []
       parameters:
@@ -425,7 +425,7 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
+          example: 10z
         url:
           type: string
           format: url

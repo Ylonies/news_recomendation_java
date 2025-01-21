@@ -1,5 +1,6 @@
 package org.example.parser;
 
+import org.example.entity.Article;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;

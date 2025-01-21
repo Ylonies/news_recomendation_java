@@ -1,18 +1,19 @@
 package org.example.parser.sites;
 
 
-import org.example.parser.Article;
+import org.example.entity.Article;
 import org.example.parser.BaseParser;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ThreeDNewsParser extends BaseParser {
   private static final String BLOG_LINK = "https://3dnews.ru";
 
-  private int limitPageCount;
+  private final int limitPageCount;
 
   public ThreeDNewsParser() {
     this(10);
@@ -53,6 +54,6 @@ public class ThreeDNewsParser extends BaseParser {
     String description = descriptionElement.text();
     String dateString = dateElement.text().split(",")[0];
 
-    return new Article(name, description, dateString, link);
+    return new Article(UUID.randomUUID(), name, description, dateString, link);
   }
 }

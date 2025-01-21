@@ -1,12 +1,14 @@
 package org.example.parser.sites;
 
-import org.example.parser.Article;
+import org.example.entity.Article;
 import org.example.parser.BaseParser;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class InfoqParser extends BaseParser {
   private static final String DOMAIN = "https://www.infoq.com";
@@ -33,8 +35,9 @@ public class InfoqParser extends BaseParser {
   }
 
   @Override
-  protected Article getArticle(String link) {
-    return getArticle(DOMAIN + link);
+  public Article getArticle(String link) {
+    Document page = getPage(DOMAIN + link);
+    return getArticle(link, page);  // Теперь вызываем метод, который принимает уже полученную страницу
   }
 
   @Override
@@ -54,7 +57,7 @@ public class InfoqParser extends BaseParser {
       }
     }
 
-    return new Article(title, textBuilder.toString().trim(), date, DOMAIN + link);
+    return new Article(UUID.randomUUID(), title, textBuilder.toString().trim(), date, DOMAIN + link);
   }
 
   private String enrichTitle(String link) {

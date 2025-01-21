@@ -1,6 +1,6 @@
 package org.example.parser.sites;
 
-import org.example.parser.Article;
+import org.example.entity.Article;
 import org.example.parser.SiteParse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class RSSParser implements SiteParse {
   private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
@@ -63,7 +64,7 @@ public class RSSParser implements SiteParse {
     String dateString = dateElement.text();
     String link = linkElement.text();
 
-    return new Article(name,description, dateString, link);
+    return new Article(UUID.randomUUID(), name,description, dateString, link);
   }
 
   private Document getPage(String link) {

@@ -1,6 +1,5 @@
 package org.example.parser.sites;
 
-import org.example.parser.Article;
 import org.example.parser.ParserDownloader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
